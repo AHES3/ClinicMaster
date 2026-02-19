@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Patient — ClinicMaster</title>
+    <meta name="description" content="Register a new patient in ClinicMaster with auto-generated ID.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@200;300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div id="cd"></div>
+    <div id="cr"></div>
+    <div id="lbt"></div>
+    <div id="lbb"></div>
+    <div class="grain"></div>
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div id="toast"><span class="tdot"></span><span id="tmsg">Done</span></div>
+
+    <button class="sb-toggle" onclick="document.querySelector('.sb').classList.toggle('open')">☰</button>
+
+    <div class="app-shell">
+        <!-- ═══ SIDEBAR ═══ -->
+        <aside class="sb">
+            <div class="sbb"><a href="index.html" style="text-decoration:none;color:inherit">Clinic<em>Master</em></a>
+            </div>
+            <div class="sbn">
+                <div class="sb-section-label">Main</div>
+                <a href="dashboard.html" class="ni" data-page="dashboard">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                    </svg>Overview</a>
+                <a href="patients.html" class="ni" data-page="patients">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>Patients</a>
+                <a href="add-patient.html" class="ni" data-page="add-patient">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="16" />
+                        <line x1="8" y1="12" x2="16" y2="12" />
+                    </svg>New Patient</a>
+                <div class="sb-section-label">Clinical</div>
+                <a href="pharmacy.html" class="ni" data-page="pharmacy">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                    </svg>Pharmacy</a>
+                <a href="diagnoses.html" class="ni" data-page="diagnoses">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>Diagnoses</a>
+                <a href="appointments.html" class="ni" data-page="appointments">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>Appointments</a>
+                <a href="files.html" class="ni" data-page="files">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                    </svg>Files</a>
+            </div>
+            <div class="dbs">
+                <div class="dd dd-indicator"></div><span class="ds-text">Connecting…</span>
+            </div>
+            <div class="sbbot">
+                <div class="uch">
+                    <div class="uav">Dr</div>
+                    <div>
+                        <div class="unm">Dr. Admin</div>
+                        <div class="url2">Physician</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ═══ MAIN ═══ -->
+        <main class="main-content panel-animate">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Register <em>New Patient</em></div>
+                    <div class="page-subtitle">Fill in patient details — a unique ID will be generated automatically
+                    </div>
+                </div>
+                <div class="page-actions">
+                    <a href="patients.html"><button class="bs">← Back to Registry</button></a>
+                </div>
+            </div>
+
+            <!-- Generated ID display -->
+            <div id="pid-disp" style="display:none">
+                <div class="pidb">
+                    <div class="pidl">Generated Patient ID</div>
+                    <div class="pidn" id="pid-v">—</div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div style="max-width: 800px;">
+                <div class="fgg">
+                    <div class="ig"><label>First Name *</label><input id="pf" placeholder="John"></div>
+                    <div class="ig"><label>Last Name *</label><input id="pl" placeholder="Smith"></div>
+                </div>
+                <div class="fg3">
+                    <div class="ig"><label>Phone *</label><input id="pp" type="tel" placeholder="+1 555 0000"></div>
+                    <div class="ig"><label>Date of Birth</label><input id="pd" type="date"></div>
+                    <div class="ig">
+                        <label>Blood Type</label>
+                        <select id="pb">
+                            <option value="">Select</option>
+                            <option>A+</option>
+                            <option>A-</option>
+                            <option>B+</option>
+                            <option>B-</option>
+                            <option>AB+</option>
+                            <option>AB-</option>
+                            <option>O+</option>
+                            <option>O-</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="fgg">
+                    <div class="ig"><label>Email</label><input id="pe" type="email" placeholder="patient@email.com">
+                    </div>
+                    <div class="ig"><label>Insurance Number</label><input id="pins" placeholder="INS-XXXX-XXXX"></div>
+                </div>
+                <div class="ig"><label>Address</label><input id="padr" placeholder="123 Main St, City"></div>
+                <div class="ig"><label>Medical Notes / Allergies</label><textarea id="pnts"
+                        placeholder="Known allergies, chronic conditions, past surgeries…"></textarea></div>
+
+                <div class="section-divider">
+                    <div class="sl">Patient Files</div>
+                    <p style="font-size:12.5px;color:var(--font-secondary);margin-bottom:16px">
+                        Upload files to attach to this patient's record. You can also upload files later from the Files
+                        page.
+                    </p>
+                    <div class="uz" id="uzn" onclick="document.getElementById('fi').click()">
+                        <input type="file" id="fi" multiple onchange="handleNewPatientFiles(this.files)">
+                        <div class="ui">⬆</div>
+                        <div class="ut">Drop files or click to upload</div>
+                        <div class="us">PDF, DOCX, images, DICOM, lab results — all types supported</div>
+                    </div>
+                    <div class="fl" id="fl"></div>
+                </div>
+
+                <div style="display:flex;gap:10px;margin-top:20px">
+                    <button class="bs sol lg" onclick="savePatient()">Save Patient</button>
+                    <a href="patients.html"><button class="bs lg">Cancel</button></a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+    <script>
+        let pendingFiles = [];
+
+        // Init drop zone
+        document.addEventListener('DOMContentLoaded', () => {
+            const uz = document.getElementById('uzn');
+            uz.addEventListener('dragover', e => { e.preventDefault(); uz.classList.add('dg'); });
+            uz.addEventListener('dragleave', () => uz.classList.remove('dg'));
+            uz.addEventListener('drop', e => { e.preventDefault(); uz.classList.remove('dg'); handleNewPatientFiles(e.dataTransfer.files); });
+        });
+
+        function handleNewPatientFiles(files) {
+            for (const file of Array.from(files)) {
+                pendingFiles.push(file);
+                const el = document.createElement('div');
+                el.className = 'fit';
+                el.innerHTML = `<span class="fn2">📄 ${file.name}</span><span class="fm">${fmtSize(file.size)}</span>`;
+                document.getElementById('fl').prepend(el);
+            }
+            toast(files.length + ' file(s) queued for upload');
+        }
+
+        async function savePatient() {
+            await loadAll();
+
+            const fn = document.getElementById('pf').value.trim();
+            const ln = document.getElementById('pl').value.trim();
+            const ph = document.getElementById('pp').value.trim();
+
+            if (!fn || !ln || !ph) { toast('First name, last name, and phone are required', 'err'); return; }
+
+            const dob = document.getElementById('pd').value;
+            const age = calcAge(dob);
+            const id = genPatientID();
+
+            const row = {
+                id, fname: fn, lname: ln, name: fn + ' ' + ln,
+                phone: ph,
+                email: document.getElementById('pe').value,
+                dob, age,
+                blood: document.getElementById('pb').value,
+                address: document.getElementById('padr').value,
+                insurance: document.getElementById('pins').value,
+                notes: document.getElementById('pnts').value,
+                status: 'active',
+                created: new Date().toISOString()
+            };
+
+            if (!await ins('cm_patients', row)) return;
+
+            // Upload queued files linked to this patient
+            for (const file of pendingFiles) {
+                const fileRow = {
+                    id: 'FILE-' + Date.now() + Math.floor(Math.random() * 9999),
+                    name: file.name, size: file.size, type: file.type,
+                    patient_id: id, patient_name: row.name,
+                    date: new Date().toISOString()
+                };
+                await ins('cm_files', fileRow);
+            }
+
+            // Show success
+            document.getElementById('pid-v').textContent = id;
+            document.getElementById('pid-disp').style.display = 'block';
+            toast('Patient registered: ' + id, 'ok');
+
+            // Clear form after delay
+            setTimeout(() => {
+                window.location.href = 'patients.html';
+            }, 2500);
+        }
+
+        loadAll();
+    </script>
+</body>
+
+</html>

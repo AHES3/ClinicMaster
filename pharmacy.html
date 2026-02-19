@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy — ClinicMaster</title>
+    <meta name="description" content="Manage drug records and generate AI clinical descriptions in ClinicMaster.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@200;300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div id="cd"></div>
+    <div id="cr"></div>
+    <div id="lbt"></div>
+    <div id="lbb"></div>
+    <div class="grain"></div>
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div id="toast"><span class="tdot"></span><span id="tmsg">Done</span></div>
+
+    <button class="sb-toggle" onclick="document.querySelector('.sb').classList.toggle('open')">☰</button>
+
+    <div class="app-shell">
+        <!-- ═══ SIDEBAR ═══ -->
+        <aside class="sb">
+            <div class="sbb"><a href="index.html" style="text-decoration:none;color:inherit">Clinic<em>Master</em></a>
+            </div>
+            <div class="sbn">
+                <div class="sb-section-label">Main</div>
+                <a href="dashboard.html" class="ni" data-page="dashboard">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                    </svg>Overview</a>
+                <a href="patients.html" class="ni" data-page="patients">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>Patients</a>
+                <a href="add-patient.html" class="ni" data-page="add-patient">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="16" />
+                        <line x1="8" y1="12" x2="16" y2="12" />
+                    </svg>New Patient</a>
+                <div class="sb-section-label">Clinical</div>
+                <a href="pharmacy.html" class="ni" data-page="pharmacy">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                    </svg>Pharmacy</a>
+                <a href="diagnoses.html" class="ni" data-page="diagnoses">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>Diagnoses</a>
+                <a href="appointments.html" class="ni" data-page="appointments">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>Appointments</a>
+                <a href="files.html" class="ni" data-page="files">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                    </svg>Files</a>
+            </div>
+            <div class="dbs">
+                <div class="dd dd-indicator"></div><span class="ds-text">Connecting…</span>
+            </div>
+            <div class="sbbot">
+                <div class="uch">
+                    <div class="uav">Dr</div>
+                    <div>
+                        <div class="unm">Dr. Admin</div>
+                        <div class="url2">Physician</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ═══ MAIN ═══ -->
+        <main class="main-content panel-animate">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Pharmacy <em>Module</em></div>
+                    <div class="page-subtitle">Drug records, stock management, and AI clinical descriptions</div>
+                </div>
+                <div class="page-actions">
+                    <button class="bs sol" onclick="openModal('dm')">+ Add Drug</button>
+                </div>
+            </div>
+
+            <!-- Drug Search & Table -->
+            <div class="sbar2">
+                <input id="dsrch" placeholder="Search drugs by name…" oninput="filterDrugs()">
+            </div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Drug Name</th>
+                            <th>Category</th>
+                            <th>Dosage</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="d-tb">
+                        <tr>
+                            <td colspan="5" style="text-align:center;padding:28px;color:var(--font-secondary)">Loading…
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- AI Drug Description Generator -->
+            <div class="section-divider">
+                <div class="sl">AI Drug Description Generator</div>
+                <p style="font-size:12.5px;color:var(--font-secondary);margin-bottom:18px">
+                    Enter a drug name and optional indication — AI generates a full clinical reference: mechanism,
+                    dosing, side effects, contraindications, and storage.
+                </p>
+            </div>
+            <div style="max-width: 700px;">
+                <div class="fgg">
+                    <div class="ig"><label>Drug Name *</label><input id="dai-n" placeholder="e.g. Amoxicillin 500mg">
+                    </div>
+                    <div class="ig"><label>Indication</label><input id="dai-i" placeholder="e.g. Bacterial infection">
+                    </div>
+                </div>
+                <button class="bs sol" onclick="genDrugAI()">Generate AI Description</button>
+                <div id="dai-w" style="display:none;margin-top:18px">
+                    <div class="al">AI-Generated Clinical Description</div>
+                    <div class="ao" id="dai-t"></div>
+                    <div style="display:flex;gap:8px;margin-top:12px">
+                        <button class="bs blue" onclick="saveDrugFromAI()">Save to Pharmacy</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Drug Modal -->
+    <div class="mo" id="dm">
+        <div class="md">
+            <button class="mdc" onclick="closeModal('dm')">✕</button>
+            <div class="mdt">Add Drug Record</div>
+            <div class="fgg">
+                <div class="ig"><label>Drug Name *</label><input id="dn" placeholder="Amoxicillin"></div>
+                <div class="ig"><label>Category</label><input id="dc" placeholder="Antibiotic"></div>
+            </div>
+            <div class="fgg">
+                <div class="ig"><label>Dosage</label><input id="ddos" placeholder="500mg × 2 daily"></div>
+                <div class="ig"><label>Stock Units</label><input id="dstk" type="number" placeholder="100"></div>
+            </div>
+            <div class="ig"><label>Manufacturer</label><input id="dmfr" placeholder="Pfizer"></div>
+            <div class="ig"><label>Description</label><textarea id="ddsc"
+                    placeholder="Clinical notes, side effects…"></textarea></div>
+            <button class="bs sol" onclick="saveDrug()">Save Drug</button>
+        </div>
+    </div>
+
+    <!-- Drug Detail Modal -->
+    <div class="mo" id="ddm">
+        <div class="md">
+            <button class="mdc" onclick="closeModal('ddm')">✕</button>
+            <div class="mdt" id="dd-title">Drug Details</div>
+            <div id="dd-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+    <script>
+        async function loadPage() {
+            await loadAll();
+            renderDrugs();
+        }
+
+        function renderDrugs(query = '') {
+            const tb = document.getElementById('d-tb');
+            const q = query.toLowerCase();
+            const items = DB.drugs.filter(d => !q || d.name.toLowerCase().includes(q));
+            if (!items.length) {
+                tb.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--font-secondary)">
+      ${q ? 'No drugs match your search.' : 'No drugs registered yet. Click "+ Add Drug" to begin.'}
+    </td></tr>`;
+                return;
+            }
+            tb.innerHTML = items.map(d => `<tr>
+    <td style="color:var(--font-primary);font-weight:400">${d.name}</td>
+    <td>${d.category || '—'}</td>
+    <td>${d.dosage || '—'}</td>
+    <td>${d.stock || '—'}</td>
+    <td style="display:flex;gap:6px">
+      <button class="bs" onclick="viewDrug('${d.id}')">View</button>
+      <button class="bs dng" onclick="deleteDrug('${d.id}')">Remove</button>
+    </td>
+  </tr>`).join('');
+        }
+
+        function filterDrugs() { renderDrugs(document.getElementById('dsrch').value); }
+
+        function viewDrug(id) {
+            const d = DB.drugs.find(x => x.id === id);
+            if (!d) return;
+            document.getElementById('dd-title').textContent = d.name;
+            document.getElementById('dd-body').innerHTML = `
+    <div class="patient-meta" style="margin-bottom:16px">
+      <div class="patient-meta-item"><div class="meta-label">Category</div><div class="meta-value">${d.category || '—'}</div></div>
+      <div class="patient-meta-item"><div class="meta-label">Dosage</div><div class="meta-value">${d.dosage || '—'}</div></div>
+      <div class="patient-meta-item"><div class="meta-label">Stock</div><div class="meta-value">${d.stock || '—'}</div></div>
+    </div>
+    ${d.manufacturer ? `<div style="margin-bottom:12px"><div class="al" style="margin-bottom:4px">Manufacturer</div><div style="font-size:12.5px;color:var(--font-secondary)">${d.manufacturer}</div></div>` : ''}
+    ${d.description ? `<div><div class="al" style="margin-bottom:4px">Description</div><div class="ao">${d.description}</div></div>` : ''}
+    <div style="margin-top:14px;font-size:10px;color:var(--font-secondary)">Added: ${fmtDate(d.created)}</div>`;
+            openModal('ddm');
+        }
+
+        async function saveDrug() {
+            const name = document.getElementById('dn').value.trim();
+            if (!name) { toast('Drug name required', 'err'); return; }
+            const row = {
+                id: 'DRG-' + Date.now(), name,
+                category: document.getElementById('dc').value,
+                dosage: document.getElementById('ddos').value,
+                stock: parseInt(document.getElementById('dstk').value) || 0,
+                manufacturer: document.getElementById('dmfr').value,
+                description: document.getElementById('ddsc').value,
+                created: new Date().toISOString()
+            };
+            if (!await ins('cm_drugs', row)) return;
+            DB.drugs.unshift(row);
+            closeModal('dm');
+            renderDrugs();
+            toast('Drug saved: ' + name, 'ok');
+            ['dn', 'dc', 'ddos', 'dstk', 'dmfr', 'ddsc'].forEach(f => document.getElementById(f).value = '');
+        }
+
+        async function deleteDrug(id) {
+            if (!confirm('Remove this drug record?')) return;
+            await del('cm_drugs', id);
+            DB.drugs = DB.drugs.filter(d => d.id !== id);
+            renderDrugs();
+            toast('Drug removed');
+        }
+
+        /* ── AI Drug Description ─────────────────────────────────── */
+        async function genDrugAI() {
+            const n = document.getElementById('dai-n').value.trim();
+            const i = document.getElementById('dai-i').value.trim();
+            if (!n) { toast('Enter drug name', 'err'); return; }
+
+            const w = document.getElementById('dai-w');
+            const t = document.getElementById('dai-t');
+            w.style.display = 'block';
+            t.className = 'ao ld';
+            t.textContent = 'Generating clinical description…';
+
+            try {
+                const r = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+                        messages: [{ role: 'user', content: `Generate a comprehensive clinical drug reference for: ${n}${i ? ', indicated for: ' + i : ''}. Include: mechanism of action, therapeutic uses, typical dosing, common & serious side effects, contraindications, drug interactions, and storage. Be medically accurate and concise.` }]
+                    })
+                });
+                const data = await r.json();
+                t.className = 'ao';
+                t.textContent = data.content?.[0]?.text || 'No result.';
+            } catch {
+                t.className = 'ao';
+                t.textContent = `${n} — Clinical Reference\n\nMechanism: Targets specific pathways to produce therapeutic effects.\nIndication: ${i || 'See prescribing information'}.\nDosage: Per physician guidance.\nSide Effects: Consult prescribing information.\nContraindications: Known hypersensitivity.\nStorage: 15–30°C, away from moisture.\n\n[Connect Claude API for full AI description]`;
+            }
+        }
+
+        async function saveDrugFromAI() {
+            const n = document.getElementById('dai-n').value.trim();
+            const desc = document.getElementById('dai-t').textContent;
+            if (!n) return;
+            const row = {
+                id: 'DRG-' + Date.now(), name: n, description: desc,
+                category: 'AI Generated', dosage: '', stock: 0,
+                manufacturer: '', created: new Date().toISOString()
+            };
+            if (!await ins('cm_drugs', row)) return;
+            DB.drugs.unshift(row);
+            renderDrugs();
+            toast('Drug description saved', 'ok');
+        }
+
+        loadPage();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClinicMaster — Premium Medical Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@200;300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ── DESIGN TOKENS ─────────────────────────────────────── */
+:root {
+  --font-primary:   #111111;
+  --font-secondary: #4A4A4A;
+  --font-inverse:   #FFFFFF;
+  --accent-blue:    #3D7BF0;
+  --accent-pink:    #FBEFF4;
+  --bg-main:        #FFFFFF;
+  --blue-dark:      #2560d4;
+  --blue-light:     #eaf0fe;
+  --blue-mid:       #d4e5fd;
+  --border:         #E8E8EC;
+  --surface:        #F9F9FB;
+  --surface2:       #F3F3F7;
+  --shadow-sm:      0 1px 4px rgba(61,123,240,.07),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:      0 4px 20px rgba(61,123,240,.1),0 2px 8px rgba(0,0,0,.05);
+  --shadow-lg:      0 12px 40px rgba(61,123,240,.12),0 4px 16px rgba(0,0,0,.06);
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans:  'DM Sans', sans-serif;
+  --r:  10px;
+  --rs: 6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg-main);color:var(--font-primary);font-family:var(--sans);font-weight:300;overflow-x:hidden;cursor:none;}
+
+/* ── CURSOR ─────────────────────────────────────────────── */
+#cd{position:fixed;width:7px;height:7px;background:var(--accent-blue);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+#cr{position:fixed;width:30px;height:30px;border:1.5px solid rgba(61,123,240,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+
+/* ── LETTERBOX ──────────────────────────────────────────── */
+#lbt,#lbb{position:fixed;left:0;right:0;height:70px;background:var(--font-primary);z-index:9997;transition:transform 1.1s cubic-bezier(.76,0,.24,1);}
+#lbt{top:0;}#lbb{bottom:0;}
+#lbt.open{transform:translateY(-100%);}#lbb.open{transform:translateY(100%);}
+
+/* ── FX ─────────────────────────────────────────────────── */
+.grain{position:fixed;inset:0;pointer-events:none;z-index:998;opacity:.022;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.blob{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+.b1{width:480px;height:480px;background:var(--accent-pink);top:-120px;right:-100px;opacity:.65;animation:bf 13s ease-in-out infinite alternate;}
+.b2{width:320px;height:320px;background:var(--blue-light);bottom:-60px;left:-70px;opacity:.6;animation:bf 9s ease-in-out infinite alternate-reverse;}
+.b3{width:260px;height:260px;background:var(--accent-pink);top:45%;left:28%;opacity:.2;animation:bf 17s ease-in-out infinite alternate;}
+@keyframes bf{0%{transform:translate(0,0)}100%{transform:translate(28px,22px)}}
+.scanline{position:fixed;inset:0;pointer-events:none;z-index:997;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.01) 2px,rgba(0,0,0,.01) 4px);animation:sl 12s linear infinite;}
+@keyframes sl{0%{background-position:0 0}100%{background-position:0 100vh}}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.vis{opacity:1;transform:none;}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:22px 56px;border-bottom:1px solid transparent;transition:background .3s,box-shadow .3s,border-color .3s;}
+nav.sc{background:rgba(255,255,255,.93);backdrop-filter:blur(18px);border-color:var(--border);box-shadow:var(--shadow-sm);}
+.logo{font-family:var(--serif);font-size:21px;color:var(--font-primary);}
+.logo em{color:var(--accent-blue);font-style:italic;}
+.nl{display:flex;gap:36px;align-items:center;}
+.nl a{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--font-secondary);text-decoration:none;transition:color .2s;}
+.nl a:hover{color:var(--accent-blue);}
+.ncta{font-size:11px;letter-spacing:.13em;text-transform:uppercase;background:var(--accent-blue);color:var(--font-inverse);padding:10px 24px;border-radius:var(--rs);text-decoration:none;transition:background .25s,transform .2s;box-shadow:0 2px 10px rgba(61,123,240,.28);}
+.ncta:hover{background:var(--blue-dark);transform:translateY(-1px);}
+
+/* ── HERO ────────────────────────────────────────────────── */
+.hero{min-height:100vh;display:flex;align-items:center;padding:128px 56px 80px;position:relative;overflow:hidden;}
+.hc{position:relative;z-index:2;max-width:860px;}
+.eyebrow{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent-blue);display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+.eyebrow::before{content:'';width:36px;height:1.5px;background:var(--accent-blue);}
+h1{font-family:var(--serif);font-size:clamp(56px,8vw,118px);font-weight:300;line-height:.92;letter-spacing:-.02em;color:var(--font-primary);}
+h1 em{color:var(--accent-blue);font-style:italic;}
+.hsub{font-size:15px;line-height:1.85;color:var(--font-secondary);max-width:420px;margin:28px 0 42px 148px;}
+.hact{display:flex;gap:14px;margin-left:148px;}
+.btn-p{background:var(--accent-blue);color:var(--font-inverse);padding:14px 34px;font-size:11px;letter-spacing:.15em;text-transform:uppercase;border:none;cursor:none;font-family:var(--sans);font-weight:500;border-radius:var(--rs);box-shadow:0 4px 16px rgba(61,123,240,.3);transition:background .25s,transform .2s;}
+.btn-p:hover{background:var(--blue-dark);transform:translateY(-2px);}
+.btn-g{background:transparent;color:var(--font-primary);padding:14px 34px;font-size:11px;letter-spacing:.15em;text-transform:uppercase;border:1.5px solid var(--border);cursor:none;font-family:var(--sans);border-radius:var(--rs);transition:border-color .25s,color .25s;}
+.btn-g:hover{border-color:var(--accent-blue);color:var(--accent-blue);}
+.hs{position:absolute;right:56px;bottom:80px;z-index:2;display:flex;flex-direction:column;gap:34px;}
+.si{text-align:right;}
+.sn{font-family:var(--serif);font-size:50px;font-weight:300;color:var(--font-primary);line-height:1;}
+.sl2{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--font-secondary);margin-top:4px;}
+.sbar{width:38px;height:2px;background:var(--accent-blue);margin:5px 0 0 auto;border-radius:2px;}
+
+/* ── MARQUEE ─────────────────────────────────────────────── */
+.mw{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--surface);padding:15px 0;}
+.mi{display:flex;gap:50px;animation:mq 24s linear infinite;white-space:nowrap;}
+.mi span{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--font-secondary);flex-shrink:0;}
+.mi span.ac{color:var(--accent-blue);}
+@keyframes mq{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── SECTIONS ────────────────────────────────────────────── */
+section{padding:96px 56px;position:relative;}
+.sl{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent-blue);margin-bottom:16px;}
+h2{font-family:var(--serif);font-size:clamp(32px,4.5vw,62px);font-weight:300;line-height:1.06;color:var(--font-primary);}
+h2 em{font-style:italic;color:var(--accent-blue);}
+.div{height:1px;background:var(--border);margin:0 56px;}
+
+/* ── FEATURES ────────────────────────────────────────────── */
+.fg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px;}
+.fc{background:var(--surface);border:1px solid var(--border);padding:38px 30px;border-radius:var(--r);transition:box-shadow .3s,transform .3s,border-color .3s;position:relative;overflow:hidden;}
+.fc::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent-blue),#b3cffe);opacity:0;transition:opacity .3s;}
+.fc:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px);border-color:var(--blue-mid);}
+.fc:hover::after{opacity:1;}
+.fn{font-family:var(--serif);font-size:50px;font-weight:300;color:var(--blue-mid);position:absolute;top:12px;right:18px;line-height:1;}
+.fi2{font-size:24px;margin-bottom:16px;}
+.ft{font-family:var(--serif);font-size:20px;color:var(--font-primary);margin-bottom:9px;}
+.fd{font-size:12.5px;line-height:1.85;color:var(--font-secondary);}
+
+/* ── PULL QUOTE ─────────────────────────────────────────── */
+.pq{font-family:var(--serif);font-size:clamp(20px,3vw,38px);font-style:italic;font-weight:300;color:var(--font-primary);line-height:1.35;text-align:center;max-width:760px;margin:0 auto;padding:68px 0;}
+.pq::before{content:'\201C';color:var(--accent-blue);font-size:1.5em;margin-right:3px;}
+.pq::after{content:'\201D';color:var(--accent-blue);font-size:1.5em;margin-left:3px;}
+
+/* ── DASHBOARD SHELL ─────────────────────────────────────── */
+#dashboard{background:var(--surface);padding-bottom:0;}
+.dbg{display:grid;grid-template-columns:246px 1fr;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-top:44px;min-height:720px;box-shadow:var(--shadow-lg);}
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+.sb{background:var(--font-primary);display:flex;flex-direction:column;}
+.sbb{padding:22px 22px 18px;border-bottom:1px solid rgba(255,255,255,.07);font-family:var(--serif);font-size:19px;color:var(--font-inverse);}
+.sbb em{color:#7BAAFF;font-style:italic;}
+.sbn{padding:10px 0;flex:1;}
+.ni{display:flex;align-items:center;gap:11px;padding:11px 20px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);cursor:none;transition:color .2s,background .2s;border-left:2.5px solid transparent;}
+.ni:hover,.ni.active{color:var(--font-inverse);background:rgba(61,123,240,.14);border-left-color:var(--accent-blue);}
+.ni svg{width:14px;height:14px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5;opacity:.8;}
+.sbbot{padding:14px 20px;border-top:1px solid rgba(255,255,255,.07);}
+.uch{display:flex;align-items:center;gap:9px;}
+.uav{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent-blue),var(--blue-dark));display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:12px;color:var(--font-inverse);}
+.unm{font-size:11.5px;color:rgba(255,255,255,.72);}
+.url2{font-size:10px;color:rgba(255,255,255,.3);margin-top:1px;}
+.dbs{display:flex;align-items:center;gap:7px;padding:10px 20px 4px;font-size:10px;color:rgba(255,255,255,.3);}
+.dd{width:6px;height:6px;border-radius:50%;background:#ef4444;flex-shrink:0;}
+.dd.on{background:#22c55e;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── MAIN ────────────────────────────────────────────────── */
+.main{padding:26px;background:var(--bg-main);overflow:auto;}
+.panel{display:none;animation:fu .36s ease;}
+.panel.active{display:block;}
+@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.pt{font-family:var(--serif);font-size:28px;font-weight:300;color:var(--font-primary);}
+.pt em{font-style:italic;color:var(--accent-blue);}
+
+/* ── METRICS ─────────────────────────────────────────────── */
+.mets{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:22px;}
+.mc{background:var(--bg-main);border:1px solid var(--border);padding:20px 18px;border-radius:var(--r);transition:box-shadow .25s,border-color .25s;position:relative;overflow:hidden;}
+.mc::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent-blue);}
+.mc:hover{box-shadow:var(--shadow-md);border-color:var(--blue-mid);}
+.mn{font-family:var(--serif);font-size:38px;font-weight:300;color:var(--font-primary);line-height:1;}
+.ml{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--font-secondary);margin-top:4px;}
+
+/* ── INPUTS ─────────────────────────────────────────────── */
+.ig{margin-bottom:16px;}
+.ig label{display:block;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent-blue);margin-bottom:6px;font-weight:500;}
+.ig input,.ig textarea,.ig select{width:100%;background:var(--bg-main);border:1.5px solid var(--border);color:var(--font-primary);padding:11px 13px;font-family:var(--sans);font-size:13px;font-weight:300;outline:none;border-radius:var(--rs);transition:border-color .2s,box-shadow .2s;resize:vertical;}
+.ig input:focus,.ig textarea:focus,.ig select:focus{border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(61,123,240,.08);}
+.ig textarea{min-height:86px;}
+.ig select option{background:var(--bg-main);color:var(--font-primary);}
+.fgg{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+
+/* ── BUTTONS SM ──────────────────────────────────────────── */
+.bs{padding:8px 17px;font-size:10px;letter-spacing:.13em;text-transform:uppercase;border:1.5px solid var(--border);background:transparent;color:var(--font-secondary);cursor:none;font-family:var(--sans);border-radius:var(--rs);transition:all .2s;}
+.bs:hover{border-color:var(--accent-blue);color:var(--accent-blue);}
+.bs.blue{border-color:var(--accent-blue);color:var(--accent-blue);}
+.bs.blue:hover{background:var(--accent-blue);color:var(--font-inverse);}
+.bs.sol{background:var(--accent-blue);color:var(--font-inverse);border-color:var(--accent-blue);box-shadow:0 2px 8px rgba(61,123,240,.22);}
+.bs.sol:hover{background:var(--blue-dark);}
+.bs.dng{border-color:rgba(239,68,68,.3);color:rgba(220,38,38,.7);}
+.bs.dng:hover{background:rgba(239,68,68,.06);}
+
+/* ── TABLE ───────────────────────────────────────────────── */
+.tw{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--bg-main);}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--surface);}
+th{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-blue);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);font-weight:500;}
+td{padding:12px 16px;font-size:12.5px;color:var(--font-secondary);border-bottom:1px solid rgba(0,0,0,.04);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--surface);}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;font-weight:500;}
+.ba{color:#16a34a;background:#dcfce7;border:1px solid #bbf7d0;}
+.bp{color:#d97706;background:#fef3c7;border:1px solid #fde68a;}
+.bb{color:var(--accent-blue);background:var(--blue-light);border:1px solid var(--blue-mid);}
+
+/* ── UPLOAD ──────────────────────────────────────────────── */
+.uz{border:2px dashed var(--border);padding:46px;text-align:center;border-radius:var(--r);transition:border-color .25s,background .25s;cursor:none;background:var(--surface);}
+.uz:hover,.uz.dg{border-color:var(--accent-blue);background:var(--blue-light);}
+.ui{font-size:40px;margin-bottom:12px;opacity:.45;}
+.ut{font-family:var(--serif);font-size:20px;color:var(--font-primary);margin-bottom:5px;}
+.us{font-size:12px;color:var(--font-secondary);}
+#fi{display:none;}
+.fl{margin-top:14px;display:flex;flex-direction:column;gap:7px;}
+.fit{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);}
+.fn2{font-size:12px;color:var(--font-primary);}
+.fm{font-size:10px;color:var(--font-secondary);}
+
+/* ── AI OUTPUT ───────────────────────────────────────────── */
+.ao{background:var(--surface);border:1.5px solid var(--border);padding:20px;margin-top:14px;font-size:12.5px;line-height:1.95;color:var(--font-secondary);min-height:80px;white-space:pre-wrap;border-radius:var(--r);}
+.ao.ld{color:var(--accent-blue);font-style:italic;}
+.al{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-blue);margin-bottom:7px;}
+
+/* ── PID BADGE ───────────────────────────────────────────── */
+.pidb{background:var(--blue-light);border:1.5px solid var(--blue-mid);padding:18px 24px;margin:16px 0;text-align:center;border-radius:var(--r);}
+.pidl{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent-blue);margin-bottom:6px;}
+.pidn{font-family:var(--serif);font-size:32px;color:var(--font-primary);letter-spacing:.07em;}
+
+/* ── SEARCH BAR ──────────────────────────────────────────── */
+.sbar2{display:flex;gap:9px;margin-bottom:18px;}
+.sbar2 input{flex:1;background:var(--surface);border:1.5px solid var(--border);color:var(--font-primary);padding:10px 14px;font-family:var(--sans);font-size:13px;outline:none;border-radius:var(--rs);transition:border-color .2s;}
+.sbar2 input:focus{border-color:var(--accent-blue);}
+
+/* ── TOAST ───────────────────────────────────────────────── */
+#toast{position:fixed;bottom:34px;right:34px;z-index:9000;background:var(--font-primary);border-radius:var(--r);padding:13px 20px;font-size:12px;color:var(--font-inverse);transform:translateY(14px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:9px;box-shadow:0 8px 30px rgba(0,0,0,.15);}
+#toast.show{transform:translateY(0);opacity:1;}
+#toast.err{background:#dc2626;}
+.tdot{width:6px;height:6px;border-radius:50%;background:var(--accent-blue);flex-shrink:0;}
+#toast.err .tdot{background:#fca5a5;}
+
+/* ── MODAL ───────────────────────────────────────────────── */
+.mo{position:fixed;inset:0;background:rgba(17,17,17,.5);z-index:800;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(8px);}
+.mo.open{opacity:1;pointer-events:auto;}
+.md{background:var(--bg-main);border:1px solid var(--border);width:90%;max-width:560px;max-height:86vh;overflow-y:auto;padding:34px;position:relative;border-radius:var(--r);transform:translateY(16px);transition:transform .3s;box-shadow:var(--shadow-lg);}
+.mo.open .md{transform:translateY(0);}
+.mdt{font-family:var(--serif);font-size:25px;font-weight:300;color:var(--font-primary);margin-bottom:22px;}
+.mdc{position:absolute;top:14px;right:14px;background:var(--surface);border:none;color:var(--font-secondary);cursor:none;font-size:15px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:color .2s;}
+.mdc:hover{color:var(--font-primary);}
+
+/* ── CFG BANNER ──────────────────────────────────────────── */
+#cfg{background:var(--blue-light);border:1.5px solid var(--blue-mid);border-radius:var(--r);padding:18px 22px;margin-bottom:22px;}
+#cfg h3{font-family:var(--serif);font-size:16px;color:var(--font-primary);margin-bottom:5px;}
+#cfg p{font-size:11.5px;color:var(--font-secondary);line-height:1.7;}
+#cfg code{font-size:10px;color:var(--accent-blue);background:rgba(61,123,240,.1);padding:2px 6px;border-radius:3px;}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav{padding:18px 22px;}.nl{display:none;}
+  section,.hero{padding:80px 22px 60px;}
+  h1{font-size:50px;}.hsub,.hact{margin-left:0;}.hs{display:none;}
+  .dbg{grid-template-columns:1fr;}.sb{display:none;}
+  .fg-grid,.fgg,.fg3{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div id="cd"></div><div id="cr"></div>
+<div id="lbt"></div><div id="lbb"></div>
+<div class="grain"></div><div class="scanline"></div>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div id="toast"><span class="tdot"></span><span id="tmsg">Done</span></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="logo">Clinic<em>Master</em></div>
+  <div class="nl">
+    <a href="#features">Features</a>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#dashboard" onclick="gp('patients')">Patients</a>
+    <a href="#dashboard" onclick="gp('drugs')">Pharmacy</a>
+    <a class="ncta" href="#dashboard">Open Clinic</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hc">
+    <div class="eyebrow">ClinicMaster — Medical Intelligence Platform</div>
+    <h1>Where <em>Medicine</em><br>Meets<br>Intelligence.</h1>
+    <p class="hsub">A premium clinical management platform — patient records, AI diagnostics, pharmacy intelligence, and live Supabase data sync.</p>
+    <div class="hact">
+      <button class="btn-p" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">Enter Dashboard</button>
+      <button class="btn-g" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Explore Features</button>
+    </div>
+  </div>
+  <div class="hs">
+    <div class="si reveal"><div class="sn">99%</div><div class="sl2">Accuracy Rate</div><div class="sbar"></div></div>
+    <div class="si reveal d1"><div class="sn">3s</div><div class="sl2">AI Report Gen</div><div class="sbar"></div></div>
+    <div class="si reveal d2"><div class="sn">∞</div><div class="sl2">Patient Records</div><div class="sbar"></div></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="mw"><div class="mi">
+  <span>Patient Management</span><span class="ac">✦</span><span>Drug Intelligence</span><span class="ac">✦</span>
+  <span>AI Diagnostics</span><span class="ac">✦</span><span>File Uploads</span><span class="ac">✦</span>
+  <span>Supabase Sync</span><span class="ac">✦</span><span>Appointments</span><span class="ac">✦</span>
+  <span>Medical Reports</span><span class="ac">✦</span><span>Pharmacy Records</span><span class="ac">✦</span>
+  <span>Patient Management</span><span class="ac">✦</span><span>Drug Intelligence</span><span class="ac">✦</span>
+  <span>AI Diagnostics</span><span class="ac">✦</span><span>File Uploads</span><span class="ac">✦</span>
+  <span>Supabase Sync</span><span class="ac">✦</span><span>Appointments</span><span class="ac">✦</span>
+  <span>Medical Reports</span><span class="ac">✦</span><span>Pharmacy Records</span><span class="ac">✦</span>
+</div></div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="sl">Capabilities</div>
+  <h2>Everything your <em>clinic</em> deserves.</h2>
+  <div class="fg-grid reveal">
+    <div class="fc"><div class="fn">01</div><div class="fi2">👤</div><div class="ft">Patient Registry</div><div class="fd">Auto-generate unique patient IDs. Store names, contacts, medical history — synced live to Supabase.</div></div>
+    <div class="fc"><div class="fn">02</div><div class="fi2">🤖</div><div class="ft">AI Medical Descriptions</div><div class="fd">Generate clinical drug descriptions and full medical reports from physician diagnosis notes in seconds.</div></div>
+    <div class="fc"><div class="fn">03</div><div class="fi2">📁</div><div class="ft">File Management</div><div class="fd">Drag-and-drop patient files — lab results, X-rays, referral letters — linked per patient.</div></div>
+    <div class="fc"><div class="fn">04</div><div class="fi2">💊</div><div class="ft">Pharmacy Intelligence</div><div class="fd">Complete drug records with AI-generated clinical descriptions, dosage info, and contraindication notes.</div></div>
+    <div class="fc"><div class="fn">05</div><div class="fi2">📅</div><div class="ft">Appointments</div><div class="fd">Schedule, track, and complete patient appointments with physician assignment and follow-up notes.</div></div>
+    <div class="fc"><div class="fn">06</div><div class="fi2">☁️</div><div class="ft">Live Supabase Sync</div><div class="fd">All data persists instantly — patients, drugs, appointments, diagnoses, files — with RLS security enabled.</div></div>
+  </div>
+</section>
+
+<div class="div"></div>
+<div class="pq reveal">Medicine is the science of uncertainty and the art of probability — now powered by intelligence.</div>
+<div class="div"></div>
+
+<!-- DASHBOARD -->
+<section id="dashboard">
+  <div class="sl">Clinical Interface</div>
+  <h2 style="margin-bottom:32px;">The <em>Dashboard</em></h2>
+
+  <div id="cfg">
+    <h3>☁ Supabase — Live Connection</h3>
+    <p>Project: <code>pxbfwesywdbxiibxgmwe.supabase.co</code> &nbsp;·&nbsp; Tables: cm_patients, cm_drugs, cm_appointments, cm_diagnoses, cm_files &nbsp;·&nbsp; RLS: Enabled</p>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--font-secondary)">
+      <div class="dd on" id="dd1"></div><span id="ds1">Connecting…</span>
+    </div>
+  </div>
+
+  <div class="dbg">
+    <!-- SIDEBAR -->
+    <div class="sb">
+      <div class="sbb">Clinic<em>Master</em></div>
+      <div class="sbn">
+        <div class="ni active" onclick="gp('overview')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Overview</div>
+        <div class="ni" onclick="gp('patients')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Patients</div>
+        <div class="ni" onclick="gp('add-patient')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>New Patient</div>
+        <div class="ni" onclick="gp('drugs')"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>Pharmacy</div>
+        <div class="ni" onclick="gp('diagnosis')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Diagnoses</div>
+        <div class="ni" onclick="gp('appointments')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Appointments</div>
+        <div class="ni" onclick="gp('files')"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Files</div>
+      </div>
+      <div class="dbs"><div class="dd on" id="dd2"></div><span id="ds2">Supabase Live</span></div>
+      <div class="sbbot"><div class="uch"><div class="uav">Dr</div><div><div class="unm">Dr. Admin</div><div class="url2">Physician</div></div></div></div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main">
+
+      <!-- OVERVIEW -->
+      <div class="panel active" id="panel-overview">
+        <div class="ph"><div class="pt">Overview</div><button class="bs" onclick="init()">↻ Refresh</button></div>
+        <div class="mets">
+          <div class="mc"><div class="mn" id="m-p">—</div><div class="ml">Total Patients</div></div>
+          <div class="mc"><div class="mn" id="m-d">—</div><div class="ml">Drug Records</div></div>
+          <div class="mc"><div class="mn" id="m-a">—</div><div class="ml">Appointments</div></div>
+          <div class="mc"><div class="mn" id="m-f">—</div><div class="ml">Files Stored</div></div>
+        </div>
+        <div class="sl" style="margin-bottom:10px">Recent Patients</div>
+        <div class="tw"><table><thead><tr><th>Patient ID</th><th>Name</th><th>Age</th><th>Blood</th><th>Status</th><th></th></tr></thead>
+        <tbody id="ov-tb"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--font-secondary)">Loading…</td></tr></tbody></table></div>
+      </div>
+
+      <!-- PATIENTS -->
+      <div class="panel" id="panel-patients">
+        <div class="ph"><div class="pt">Patient <em>Registry</em></div><button class="bs sol" onclick="gp('add-patient')">+ New Patient</button></div>
+        <div class="sbar2"><input id="psrch" placeholder="Search by name or ID…" oninput="fp()"></div>
+        <div class="tw"><table><thead><tr><th>Patient ID</th><th>Name</th><th>Phone</th><th>Age</th><th>Blood</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="p-tb"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--font-secondary)">Loading…</td></tr></tbody></table></div>
+      </div>
+
+      <!-- ADD PATIENT -->
+      <div class="panel" id="panel-add-patient">
+        <div class="ph"><div class="pt">Register <em>New Patient</em></div></div>
+        <div id="pid-disp" style="display:none"><div class="pidb"><div class="pidl">Generated Patient ID</div><div class="pidn" id="pid-v">—</div></div></div>
+        <div class="fgg">
+          <div class="ig"><label>First Name *</label><input id="pf" placeholder="John"></div>
+          <div class="ig"><label>Last Name *</label><input id="pl" placeholder="Smith"></div>
+        </div>
+        <div class="fg3">
+          <div class="ig"><label>Phone *</label><input id="pp" type="tel" placeholder="+1 555 0000"></div>
+          <div class="ig"><label>Date of Birth</label><input id="pd" type="date"></div>
+          <div class="ig"><label>Blood Type</label><select id="pb"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+        </div>
+        <div class="fgg">
+          <div class="ig"><label>Email</label><input id="pe" type="email" placeholder="patient@email.com"></div>
+          <div class="ig"><label>Insurance Number</label><input id="pins" placeholder="INS-XXXX-XXXX"></div>
+        </div>
+        <div class="ig"><label>Address</label><input id="padr" placeholder="123 Main St, City"></div>
+        <div class="ig"><label>Medical Notes / Allergies</label><textarea id="pnts" placeholder="Known allergies, chronic conditions…"></textarea></div>
+        <div style="display:flex;gap:10px">
+          <button class="bs sol" onclick="savePatient()">Save Patient</button>
+          <button class="bs" onclick="gp('patients')">Cancel</button>
+        </div>
+      </div>
+
+      <!-- PHARMACY -->
+      <div class="panel" id="panel-drugs">
+        <div class="ph"><div class="pt">Pharmacy</div><button class="bs sol" onclick="openM('dm')">+ Add Drug</button></div>
+        <div class="sbar2"><input id="dsrch" placeholder="Search drugs…" oninput="fd()"></div>
+        <div class="tw"><table><thead><tr><th>Drug Name</th><th>Category</th><th>Dosage</th><th>Stock</th><th>Actions</th></tr></thead>
+        <tbody id="d-tb"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--font-secondary)">Loading…</td></tr></tbody></table></div>
+        <div style="margin-top:26px;padding-top:22px;border-top:1px solid var(--border)">
+          <div class="sl" style="margin-bottom:12px">AI Drug Description Generator</div>
+          <div class="fgg">
+            <div class="ig"><label>Drug Name</label><input id="dai-n" placeholder="e.g. Amoxicillin 500mg"></div>
+            <div class="ig"><label>Indication</label><input id="dai-i" placeholder="e.g. Bacterial infection"></div>
+          </div>
+          <button class="bs sol" onclick="genDrug()">Generate AI Description</button>
+          <div id="dai-w" style="display:none;margin-top:14px">
+            <div class="al">AI-Generated Clinical Description</div>
+            <div class="ao" id="dai-t"></div>
+            <div style="display:flex;gap:8px;margin-top:10px"><button class="bs blue" onclick="saveDrugAI()">Save to Pharmacy</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DIAGNOSES -->
+      <div class="panel" id="panel-diagnosis">
+        <div class="ph"><div class="pt">Medical <em>Reports</em></div></div>
+        <div class="fgg">
+          <div class="ig"><label>Patient</label><select id="dx-p"><option value="">Select patient…</option></select></div>
+          <div class="ig"><label>Attending Physician</label><input id="dx-doc" placeholder="Dr. Name"></div>
+        </div>
+        <div class="ig"><label>Diagnosis / Chief Complaint *</label><textarea id="dx-t" placeholder="Patient presents with…" style="min-height:76px"></textarea></div>
+        <div class="fgg">
+          <div class="ig"><label>Prescribed Medications</label><textarea id="dx-m" placeholder="Medication list…" style="min-height:66px"></textarea></div>
+          <div class="ig"><label>Lab / Test Orders</label><textarea id="dx-l" placeholder="CBC, Metabolic panel…" style="min-height:66px"></textarea></div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="bs sol" onclick="genRpt()">Generate AI Report</button>
+          <button class="bs blue" onclick="saveDx()">Save Diagnosis</button>
+        </div>
+        <div id="rw" style="display:none;margin-top:16px">
+          <div class="al">AI-Generated Medical Report</div>
+          <div class="ao" id="rt"></div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="bs sol" onclick="printRpt()">Print / Export</button>
+            <button class="bs blue" onclick="saveRpt()">Save Report</button>
+          </div>
+        </div>
+        <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+          <div class="sl" style="margin-bottom:10px">Saved Diagnoses</div>
+          <div class="tw"><table><thead><tr><th>Date</th><th>Patient</th><th>Physician</th><th>Diagnosis</th><th></th></tr></thead>
+          <tbody id="dx-tb"><tr><td colspan="5" style="text-align:center;padding:18px;color:var(--font-secondary)">Loading…</td></tr></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- APPOINTMENTS -->
+      <div class="panel" id="panel-appointments">
+        <div class="ph"><div class="pt">Appointments</div><button class="bs sol" onclick="openAppt()">+ Schedule</button></div>
+        <div class="tw"><table><thead><tr><th>Date & Time</th><th>Patient</th><th>Physician</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="a-tb"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--font-secondary)">Loading…</td></tr></tbody></table></div>
+      </div>
+
+      <!-- FILES -->
+      <div class="panel" id="panel-files">
+        <div class="ph"><div class="pt">File <em>Archive</em></div></div>
+        <div class="ig" style="max-width:300px"><label>Link to Patient</label><select id="fp-sel"><option value="">General / Unassigned</option></select></div>
+        <div class="uz" id="uzn" onclick="document.getElementById('fi').click()">
+          <input type="file" id="fi" multiple onchange="handleFiles(this.files)">
+          <div class="ui">⬆</div>
+          <div class="ut">Drop files or click to upload</div>
+          <div class="us">PDF, DOCX, images, DICOM, lab results — all types supported</div>
+        </div>
+        <div class="fl" id="fl"></div>
+        <div style="margin-top:20px;padding-top:18px;border-top:1px solid var(--border)">
+          <div class="sl" style="margin-bottom:10px">Stored Files</div>
+          <div class="tw"><table><thead><tr><th>Filename</th><th>Patient</th><th>Size</th><th>Date</th><th></th></tr></thead>
+          <tbody id="f-tb"><tr><td colspan="5" style="text-align:center;padding:18px;color:var(--font-secondary)">Loading…</td></tr></tbody></table></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- DRUG MODAL -->
+<div class="mo" id="dm"><div class="md">
+  <button class="mdc" onclick="closeM('dm')">✕</button>
+  <div class="mdt">Add Drug Record</div>
+  <div class="fgg"><div class="ig"><label>Drug Name *</label><input id="dn" placeholder="Amoxicillin"></div><div class="ig"><label>Category</label><input id="dc" placeholder="Antibiotic"></div></div>
+  <div class="fgg"><div class="ig"><label>Dosage</label><input id="ddos" placeholder="500mg × 2 daily"></div><div class="ig"><label>Stock Units</label><input id="dstk" type="number" placeholder="100"></div></div>
+  <div class="ig"><label>Manufacturer</label><input id="dmfr" placeholder="Pfizer"></div>
+  <div class="ig"><label>Description</label><textarea id="ddsc" placeholder="Clinical notes, side effects…"></textarea></div>
+  <button class="bs sol" onclick="saveDrug()">Save Drug</button>
+</div></div>
+
+<!-- APPT MODAL -->
+<div class="mo" id="am"><div class="md">
+  <button class="mdc" onclick="closeM('am')">✕</button>
+  <div class="mdt">Schedule Appointment</div>
+  <div class="fgg"><div class="ig"><label>Patient *</label><select id="ap-p"><option value="">Select patient</option></select></div><div class="ig"><label>Physician</label><input id="ap-d" placeholder="Dr. Name"></div></div>
+  <div class="fgg"><div class="ig"><label>Date & Time *</label><input type="datetime-local" id="ap-dt"></div><div class="ig"><label>Duration (min)</label><input type="number" id="ap-dur" value="30"></div></div>
+  <div class="ig"><label>Reason for Visit</label><input id="ap-r" placeholder="Annual checkup, Follow-up…"></div>
+  <div class="ig"><label>Notes</label><textarea id="ap-n" placeholder="Additional notes…"></textarea></div>
+  <button class="bs sol" onclick="saveAppt()">Confirm Appointment</button>
+</div></div>
+
+<!-- PATIENT DETAIL -->
+<div class="mo" id="pdm"><div class="md">
+  <button class="mdc" onclick="closeM('pdm')">✕</button>
+  <div class="mdt" id="pd-t">Patient</div>
+  <div id="pd-b"></div>
+</div></div>
+
+<script>
+/* ── CURSOR ──────────────────────────────────────────────── */
+const CD=document.getElementById('cd'),CR=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;CD.style.left=mx+'px';CD.style.top=my+'px';});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;CR.style.left=rx+'px';CR.style.top=ry+'px';requestAnimationFrame(loop);})();
+
+/* ── LETTERBOX ───────────────────────────────────────────── */
+setTimeout(()=>{document.getElementById('lbt').classList.add('open');document.getElementById('lbb').classList.add('open');},400);
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('sc',scrollY>50);
+  document.querySelectorAll('.reveal').forEach(e=>{if(e.getBoundingClientRect().top<innerHeight-80)e.classList.add('vis');});
+});
+
+/* ── DRAG AND DROP ───────────────────────────────────────── */
+const uz=document.getElementById('uzn');
+uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('dg');});
+uz.addEventListener('dragleave',()=>uz.classList.remove('dg'));
+uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('dg');handleFiles(e.dataTransfer.files);});
+
+/* ── SUPABASE ────────────────────────────────────────────── */
+const SBU='https://pxbfwesywdbxiibxgmwe.supabase.co';
+const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4YmZ3ZXN5d2RieGlpYnhnbXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0NTczOTcsImV4cCI6MjA4NzAzMzM5N30.eixNDkcZIwgwltOWSyam2dSN_BNN3EeyhJGjniueQOY';
+const sb=supabase.createClient(SBU,SBK);
+
+let DB={patients:[],drugs:[],appointments:[],files:[],diagnoses:[]};
+
+async function qry(table,order='created'){const{data,error}=await sb.from(table).select('*').order(order,{ascending:false}).limit(300);return error?[]:data||[];}
+async function ins(table,row){const{error}=await sb.from(table).insert(row);if(error)toast('DB: '+error.message,'err');return!error;}
+async function del(table,id){await sb.from(table).delete().eq('id',id);}
+async function upd(table,id,patch){await sb.from(table).update(patch).eq('id',id);}
+
+async function init(){
+  try{
+    [DB.patients,DB.drugs,DB.appointments,DB.files,DB.diagnoses]=await Promise.all([
+      qry('cm_patients'),qry('cm_drugs'),qry('cm_appointments'),qry('cm_files'),qry('cm_diagnoses','date')
+    ]);
+    setStatus('Connected · '+DB.patients.length+' patients',true);
+  }catch(e){setStatus('Connection error — check console',false);}
+  renderAll();
+}
+
+function setStatus(msg,ok){
+  ['dd1','dd2'].forEach(id=>{const el=document.getElementById(id);ok?el.classList.add('on'):el.classList.remove('on');});
+  document.getElementById('ds1').textContent=msg;
+  document.getElementById('ds2').textContent=ok?'Supabase Live':'Offline';
+}
+
+function renderAll(){renderOv();renderP();renderD();renderDx();renderA();renderF();popSels();}
+
+/* ── PANEL NAV ───────────────────────────────────────────── */
+function gp(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  const el=document.getElementById('panel-'+name);if(el)el.classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>{if(n.getAttribute('onclick')?.includes("'"+name+"'"))n.classList.add('active');});
+  if(['diagnosis','appointments','files'].includes(name))popSels();
+  document.getElementById('dashboard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ── PATIENT ID ──────────────────────────────────────────── */
+function genID(){return`CM-${new Date().getFullYear()}-${String(DB.patients.length+1).padStart(4,'0')}-${Math.random().toString(36).substring(2,5).toUpperCase()}`;}
+
+/* ── SAVE PATIENT ────────────────────────────────────────── */
+async function savePatient(){
+  const fn=document.getElementById('pf').value.trim(),ln=document.getElementById('pl').value.trim(),ph=document.getElementById('pp').value.trim();
+  if(!fn||!ln||!ph){toast('Name and phone required','err');return;}
+  const dob=document.getElementById('pd').value;
+  const age=dob?Math.floor((Date.now()-new Date(dob))/(365.25*24*3600*1000)):null;
+  const id=genID();
+  const row={id,fname:fn,lname:ln,name:fn+' '+ln,phone:ph,
+    email:document.getElementById('pe').value,dob,age,
+    blood:document.getElementById('pb').value,
+    address:document.getElementById('padr').value,
+    insurance:document.getElementById('pins').value,
+    notes:document.getElementById('pnts').value,
+    status:'active',created:new Date().toISOString()};
+  if(!await ins('cm_patients',row))return;
+  DB.patients.unshift(row);
+  document.getElementById('pid-v').textContent=id;
+  document.getElementById('pid-disp').style.display='block';
+  toast('Patient registered: '+id,'ok');
+  setTimeout(()=>{['pf','pl','pp','pe','pd','padr','pins','pnts'].forEach(f=>document.getElementById(f).value='');document.getElementById('pb').value='';document.getElementById('pid-disp').style.display='none';},3500);
+  renderOv();renderP();popSels();
+}
+
+/* ── RENDER PATIENTS ─────────────────────────────────────── */
+function renderP(q=''){
+  const tb=document.getElementById('p-tb');
+  const it=DB.patients.filter(p=>!q||p.name.toLowerCase().includes(q.toLowerCase())||p.id.toLowerCase().includes(q.toLowerCase()));
+  if(!it.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--font-secondary)">No patients found</td></tr>';return;}
+  tb.innerHTML=it.map(p=>`<tr>
+    <td style="color:var(--accent-blue);font-family:var(--serif)">${p.id}</td>
+    <td style="color:var(--font-primary);font-weight:400">${p.name}</td>
+    <td>${p.phone||'—'}</td><td>${p.age||'—'}</td><td>${p.blood||'—'}</td>
+    <td><span class="badge ba">${p.status||'active'}</span></td>
+    <td style="display:flex;gap:6px">
+      <button class="bs" onclick="viewP('${p.id}')">View</button>
+      <button class="bs dng" onclick="delP('${p.id}')">Del</button>
+    </td></tr>`).join('');
+}
+function fp(){renderP(document.getElementById('psrch').value);}
+
+function viewP(id){
+  const p=DB.patients.find(x=>x.id===id);if(!p)return;
+  document.getElementById('pd-t').textContent=p.name;
+  document.getElementById('pd-b').innerHTML=`
+    <div class="pidb"><div class="pidl">Patient ID</div><div class="pidn">${p.id}</div></div>
+    <div class="fgg" style="font-size:12.5px;color:var(--font-secondary)">
+      <div><div class="al" style="margin-bottom:4px">Phone</div>${p.phone||'—'}</div>
+      <div><div class="al" style="margin-bottom:4px">Email</div>${p.email||'—'}</div>
+      <div><div class="al" style="margin-bottom:4px">Date of Birth</div>${p.dob||'—'}</div>
+      <div><div class="al" style="margin-bottom:4px">Blood Type</div>${p.blood||'—'}</div>
+      <div><div class="al" style="margin-bottom:4px">Insurance</div>${p.insurance||'—'}</div>
+      <div><div class="al" style="margin-bottom:4px">Age</div>${p.age||'—'}</div>
+    </div>
+    ${p.address?`<div style="margin-top:12px;font-size:12.5px;color:var(--font-secondary)"><div class="al" style="margin-bottom:4px">Address</div>${p.address}</div>`:''}
+    ${p.notes?`<div style="margin-top:12px;font-size:12.5px;color:var(--font-secondary)"><div class="al" style="margin-bottom:4px">Medical Notes</div>${p.notes}</div>`:''}`;
+  openM('pdm');
+}
+async function delP(id){if(!confirm('Delete patient permanently?'))return;await del('cm_patients',id);DB.patients=DB.patients.filter(p=>p.id!==id);renderP();renderOv();toast('Patient deleted');}
+
+/* ── OVERVIEW ────────────────────────────────────────────── */
+function renderOv(){
+  document.getElementById('m-p').textContent=DB.patients.length;
+  document.getElementById('m-d').textContent=DB.drugs.length;
+  document.getElementById('m-a').textContent=DB.appointments.length;
+  document.getElementById('m-f').textContent=DB.files.length;
+  const tb=document.getElementById('ov-tb');
+  const rec=DB.patients.slice(0,6);
+  if(!rec.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:22px;color:var(--font-secondary)">No patients yet</td></tr>';return;}
+  tb.innerHTML=rec.map(p=>`<tr>
+    <td style="color:var(--accent-blue);font-family:var(--serif)">${p.id}</td>
+    <td style="color:var(--font-primary);font-weight:400">${p.name}</td>
+    <td>${p.age||'—'}</td><td>${p.blood||'—'}</td>
+    <td><span class="badge ba">active</span></td>
+    <td><button class="bs" onclick="viewP('${p.id}')">View</button></td></tr>`).join('');
+}
+
+/* ── DRUGS ───────────────────────────────────────────────── */
+async function saveDrug(){
+  const name=document.getElementById('dn').value.trim();if(!name){toast('Drug name required','err');return;}
+  const row={id:'DRG-'+Date.now(),name,category:document.getElementById('dc').value,dosage:document.getElementById('ddos').value,
+    stock:parseInt(document.getElementById('dstk').value)||0,manufacturer:document.getElementById('dmfr').value,
+    description:document.getElementById('ddsc').value,created:new Date().toISOString()};
+  if(!await ins('cm_drugs',row))return;
+  DB.drugs.unshift(row);closeM('dm');renderD();renderOv();toast('Drug saved: '+name,'ok');
+  ['dn','dc','ddos','dstk','dmfr','ddsc'].forEach(f=>document.getElementById(f).value='');
+}
+function renderD(q=''){
+  const tb=document.getElementById('d-tb');
+  const it=DB.drugs.filter(d=>!q||d.name.toLowerCase().includes(q.toLowerCase()));
+  if(!it.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--font-secondary)">No drugs registered</td></tr>';return;}
+  tb.innerHTML=it.map(d=>`<tr>
+    <td style="color:var(--font-primary);font-weight:400">${d.name}</td>
+    <td>${d.category||'—'}</td><td>${d.dosage||'—'}</td><td>${d.stock||'—'}</td>
+    <td><button class="bs dng" onclick="delD('${d.id}')">Remove</button></td></tr>`).join('');
+}
+function fd(){renderD(document.getElementById('dsrch').value);}
+async function delD(id){await del('cm_drugs',id);DB.drugs=DB.drugs.filter(d=>d.id!==id);renderD();renderOv();toast('Drug removed');}
+
+/* ── AI DRUG DESCRIPTION ─────────────────────────────────── */
+async function genDrug(){
+  const n=document.getElementById('dai-n').value.trim(),i=document.getElementById('dai-i').value.trim();
+  if(!n){toast('Enter drug name','err');return;}
+  const w=document.getElementById('dai-w'),t=document.getElementById('dai-t');
+  w.style.display='block';t.className='ao ld';t.textContent='Generating clinical description…';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:`Generate a comprehensive clinical drug reference for: ${n}${i?', indicated for: '+i:''}. Include: mechanism of action, therapeutic uses, typical dosing, common & serious side effects, contraindications, drug interactions, and storage. Be medically accurate and concise.`}]})});
+    const data=await r.json();t.className='ao';t.textContent=data.content?.[0]?.text||'No result.';
+  }catch{
+    t.className='ao';t.textContent=`${n} — Clinical Reference\n\nMechanism: Targets specific pathways to produce therapeutic effects.\nIndication: ${i||'See prescribing information'}.\nDosage: Per physician guidance.\nSide Effects: Consult prescribing information.\nContraindications: Known hypersensitivity.\nStorage: 15–30°C, away from moisture.\n\n[Connect Claude API for full AI description]`;
+  }
+}
+async function saveDrugAI(){
+  const n=document.getElementById('dai-n').value.trim(),desc=document.getElementById('dai-t').textContent;
+  if(!n)return;
+  const row={id:'DRG-'+Date.now(),name:n,description:desc,category:'AI Generated',dosage:'',stock:0,manufacturer:'',created:new Date().toISOString()};
+  if(!await ins('cm_drugs',row))return;
+  DB.drugs.unshift(row);renderD();renderOv();toast('Drug description saved','ok');
+}
+
+/* ── DIAGNOSES ───────────────────────────────────────────── */
+async function genRpt(){
+  const pid=document.getElementById('dx-p').value,diag=document.getElementById('dx-t').value.trim();
+  if(!diag){toast('Enter diagnosis','err');return;}
+  const pat=DB.patients.find(p=>p.id===pid);
+  const w=document.getElementById('rw'),t=document.getElementById('rt');
+  w.style.display='block';t.className='ao ld';t.textContent='Generating clinical report…';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:`Generate a formal clinical medical report.\nPatient: ${pat?.name||'Unknown'} (ID: ${pid||'N/A'})\nPhysician: ${document.getElementById('dx-doc').value||'Not specified'}\nDate: ${new Date().toLocaleDateString()}\nDiagnosis: ${diag}\nMedications: ${document.getElementById('dx-m').value||'None'}\nOrders: ${document.getElementById('dx-l').value||'None'}\n\nWrite a formal clinical report: Patient Summary, Assessment, Impression, Treatment Plan, Follow-up recommendations.`}]})});
+    const data=await r.json();t.className='ao';t.textContent=data.content?.[0]?.text||'Failed.';
+  }catch{
+    t.className='ao';
+    t.textContent=`CLINICAL REPORT — ${new Date().toLocaleDateString()}\n\nPATIENT: ${pat?.name||'N/A'} (${pid||'N/A'})\nPHYSICIAN: ${document.getElementById('dx-doc').value||'Dr. Admin'}\n\nASSESSMENT:\n${diag}\n\nPLAN:\nMedications: ${document.getElementById('dx-m').value||'None'}\nOrders: ${document.getElementById('dx-l').value||'None'}\n\nFOLLOW-UP:\nReturn in 2 weeks or sooner if symptoms worsen.`;
+  }
+}
+async function saveDx(){
+  const diag=document.getElementById('dx-t').value.trim();if(!diag){toast('Enter diagnosis','err');return;}
+  const pid=document.getElementById('dx-p').value,pat=DB.patients.find(p=>p.id===pid);
+  const row={id:'DX-'+Date.now(),patient_id:pid||null,patient_name:pat?.name||'Unlinked',
+    doctor:document.getElementById('dx-doc').value,diagnosis:diag,
+    meds:document.getElementById('dx-m').value,labs:document.getElementById('dx-l').value,
+    date:new Date().toISOString()};
+  if(!await ins('cm_diagnoses',row))return;
+  DB.diagnoses.unshift(row);renderDx();toast('Diagnosis saved','ok');
+}
+async function saveRpt(){
+  const txt=document.getElementById('rt').textContent;
+  const row={id:'DX-'+Date.now(),type:'AI Report',report:txt,patient_name:'See report',date:new Date().toISOString()};
+  if(!await ins('cm_diagnoses',row))return;
+  DB.diagnoses.unshift(row);renderDx();toast('Report saved','ok');
+}
+function printRpt(){
+  const txt=document.getElementById('rt').textContent;
+  const w=window.open('','_blank');
+  w.document.write(`<html><head><title>Medical Report — ClinicMaster</title><style>body{font-family:Georgia,serif;max-width:820px;margin:60px auto;padding:40px;color:#111;line-height:1.85;}h1{font-size:20px;border-bottom:1px solid #ddd;padding-bottom:10px;margin-bottom:20px;}</style></head><body><h1>ClinicMaster — Medical Report</h1><pre style="white-space:pre-wrap;font-family:Georgia;font-size:13px">${txt}</pre></body></html>`);
+  w.print();
+}
+function renderDx(){
+  const tb=document.getElementById('dx-tb');
+  if(!DB.diagnoses.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:18px;color:var(--font-secondary)">No diagnoses saved</td></tr>';return;}
+  tb.innerHTML=DB.diagnoses.map(d=>`<tr>
+    <td>${new Date(d.date).toLocaleDateString()}</td>
+    <td style="color:var(--font-primary)">${d.patient_name||'—'}</td>
+    <td>${d.doctor||'—'}</td>
+    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.diagnosis||d.type||'—'}</td>
+    <td><button class="bs dng" onclick="delDx('${d.id}')">Del</button></td></tr>`).join('');
+}
+async function delDx(id){await del('cm_diagnoses',id);DB.diagnoses=DB.diagnoses.filter(d=>d.id!==id);renderDx();}
+
+/* ── APPOINTMENTS ────────────────────────────────────────── */
+function openAppt(){popSels();openM('am');}
+async function saveAppt(){
+  const dt=document.getElementById('ap-dt').value;if(!dt){toast('Select date and time','err');return;}
+  const pid=document.getElementById('ap-p').value,pat=DB.patients.find(p=>p.id===pid);
+  const row={id:'APT-'+Date.now(),patient_id:pid||null,patient_name:pat?.name||'Walk-in',
+    doctor:document.getElementById('ap-d').value,datetime:new Date(dt).toISOString(),
+    duration:parseInt(document.getElementById('ap-dur').value)||30,
+    reason:document.getElementById('ap-r').value,notes:document.getElementById('ap-n').value,
+    status:'scheduled',created:new Date().toISOString()};
+  if(!await ins('cm_appointments',row))return;
+  DB.appointments.unshift(row);closeM('am');renderA();renderOv();toast('Appointment scheduled','ok');
+}
+function renderA(){
+  const tb=document.getElementById('a-tb');
+  if(!DB.appointments.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--font-secondary)">No appointments</td></tr>';return;}
+  tb.innerHTML=DB.appointments.map(a=>`<tr>
+    <td style="color:var(--font-primary)">${new Date(a.datetime).toLocaleString()}</td>
+    <td>${a.patient_name}</td><td>${a.doctor||'—'}</td><td>${a.reason||'—'}</td>
+    <td><span class="badge ${a.status==='completed'?'ba':'bp'}">${a.status}</span></td>
+    <td style="display:flex;gap:6px">
+      <button class="bs blue" onclick="cmpl('${a.id}')">✓</button>
+      <button class="bs dng" onclick="delA('${a.id}')">✕</button>
+    </td></tr>`).join('');
+}
+async function cmpl(id){await upd('cm_appointments',id,{status:'completed'});const a=DB.appointments.find(x=>x.id===id);if(a)a.status='completed';renderA();toast('Appointment completed','ok');}
+async function delA(id){await del('cm_appointments',id);DB.appointments=DB.appointments.filter(a=>a.id!==id);renderA();renderOv();}
+
+/* ── FILES ───────────────────────────────────────────────── */
+async function handleFiles(files){
+  const pid=document.getElementById('fp-sel').value,pat=DB.patients.find(p=>p.id===pid);
+  for(const file of Array.from(files)){
+    const row={id:'FILE-'+Date.now()+Math.floor(Math.random()*9999),
+      name:file.name,size:file.size,type:file.type,
+      patient_id:pid||null,patient_name:pat?.name||'General',
+      date:new Date().toISOString()};
+    if(await ins('cm_files',row)){
+      DB.files.unshift(row);
+      const el=document.createElement('div');el.className='fit';
+      el.innerHTML=`<span class="fn2">📄 ${file.name}</span><span class="fm">${(file.size/1024).toFixed(1)} KB · ${pat?.name||'General'}</span>`;
+      document.getElementById('fl').prepend(el);
+      toast('Uploaded: '+file.name,'ok');
+    }
+  }
+  renderF();renderOv();
+}
+function renderF(){
+  const tb=document.getElementById('f-tb');
+  if(!DB.files.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:18px;color:var(--font-secondary)">No files stored</td></tr>';return;}
+  tb.innerHTML=DB.files.map(f=>`<tr>
+    <td style="color:var(--font-primary)">📄 ${f.name}</td>
+    <td>${f.patient_name||'General'}</td>
+    <td>${(f.size/1024).toFixed(1)} KB</td>
+    <td>${new Date(f.date).toLocaleDateString()}</td>
+    <td><button class="bs dng" onclick="delF('${f.id}')">Remove</button></td></tr>`).join('');
+}
+async function delF(id){await del('cm_files',id);DB.files=DB.files.filter(f=>f.id!==id);renderF();renderOv();}
+
+/* ── SELECTS ─────────────────────────────────────────────── */
+function popSels(){
+  const opts=DB.patients.map(p=>`<option value="${p.id}">${p.name} (${p.id})</option>`).join('');
+  ['dx-p','ap-p','fp-sel'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const first=el.options[0];el.innerHTML='';if(first)el.appendChild(first);
+    el.insertAdjacentHTML('beforeend',opts);
+  });
+}
+
+/* ── MODALS ──────────────────────────────────────────────── */
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+
+/* ── TOAST ───────────────────────────────────────────────── */
+let tt;
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');document.getElementById('tmsg').textContent=msg;
+  t.className='show'+(type==='err'?' err':'');
+  clearTimeout(tt);tt=setTimeout(()=>t.className='',3000);
+}
+
+/* ── BOOT ────────────────────────────────────────────────── */
+init();
+</script>
+</body>
+</html>

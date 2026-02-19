@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinicMaster — Premium Medical Intelligence Platform</title>
+    <meta name="description"
+        content="ClinicMaster: A premium clinical management platform — patient records, AI diagnostics, pharmacy intelligence, and live Supabase data sync.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@200;300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Cursor -->
+    <div id="cd"></div>
+    <div id="cr"></div>
+    <!-- Letterbox -->
+    <div id="lbt"></div>
+    <div id="lbb"></div>
+    <!-- FX -->
+    <div class="grain"></div>
+    <div class="scanline"></div>
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+    <!-- Toast -->
+    <div id="toast"><span class="tdot"></span><span id="tmsg">Done</span></div>
+
+    <!-- ═══ NAVIGATION ═══ -->
+    <nav id="nav">
+        <a href="index.html" class="logo">Clinic<em>Master</em></a>
+        <div class="nl">
+            <a href="#features">Features</a>
+            <a href="#about">About</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="patients.html">Patients</a>
+            <a href="pharmacy.html">Pharmacy</a>
+            <a href="dashboard.html" class="ncta">Open Clinic</a>
+        </div>
+    </nav>
+
+    <!-- ═══ HERO ═══ -->
+    <section class="hero" id="home">
+        <div class="hc">
+            <div class="eyebrow">ClinicMaster — Medical Intelligence Platform</div>
+            <h1>Where <em>Medicine</em><br>Meets<br>Intelligence.</h1>
+            <p class="hsub">A premium clinical management platform — patient records, AI diagnostics, pharmacy
+                intelligence, and live Supabase data sync.</p>
+            <div class="hact">
+                <a href="dashboard.html"><button class="btn-p">Enter Dashboard</button></a>
+                <button class="btn-g"
+                    onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Explore
+                    Features</button>
+            </div>
+        </div>
+        <div class="hs">
+            <div class="si reveal">
+                <div class="sn">99%</div>
+                <div class="sl2">Accuracy Rate</div>
+                <div class="sbar-hero"></div>
+            </div>
+            <div class="si reveal d1">
+                <div class="sn">3s</div>
+                <div class="sl2">AI Report Gen</div>
+                <div class="sbar-hero"></div>
+            </div>
+            <div class="si reveal d2">
+                <div class="sn">∞</div>
+                <div class="sl2">Patient Records</div>
+                <div class="sbar-hero"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ MARQUEE ═══ -->
+    <div class="mw">
+        <div class="mi">
+            <span>Patient Management</span><span class="ac">✦</span><span>Drug Intelligence</span><span
+                class="ac">✦</span>
+            <span>AI Diagnostics</span><span class="ac">✦</span><span>File Uploads</span><span class="ac">✦</span>
+            <span>Supabase Sync</span><span class="ac">✦</span><span>Appointments</span><span class="ac">✦</span>
+            <span>Medical Reports</span><span class="ac">✦</span><span>Pharmacy Records</span><span class="ac">✦</span>
+            <span>Patient Management</span><span class="ac">✦</span><span>Drug Intelligence</span><span
+                class="ac">✦</span>
+            <span>AI Diagnostics</span><span class="ac">✦</span><span>File Uploads</span><span class="ac">✦</span>
+            <span>Supabase Sync</span><span class="ac">✦</span><span>Appointments</span><span class="ac">✦</span>
+            <span>Medical Reports</span><span class="ac">✦</span><span>Pharmacy Records</span><span class="ac">✦</span>
+        </div>
+    </div>
+
+    <!-- ═══ FEATURES ═══ -->
+    <section id="features">
+        <div class="sl">Capabilities</div>
+        <h2>Everything your <em>clinic</em> deserves.</h2>
+        <div class="fg-grid reveal">
+            <div class="fc">
+                <div class="fn">01</div>
+                <div class="fi2">👤</div>
+                <div class="ft">Patient Registry</div>
+                <div class="fd">Auto-generate unique patient IDs. Store names, contacts, medical history — synced live
+                    to Supabase.</div>
+            </div>
+            <div class="fc">
+                <div class="fn">02</div>
+                <div class="fi2">🤖</div>
+                <div class="ft">AI Medical Descriptions</div>
+                <div class="fd">Generate clinical drug descriptions and full medical reports from physician diagnosis
+                    notes in seconds.</div>
+            </div>
+            <div class="fc">
+                <div class="fn">03</div>
+                <div class="fi2">📁</div>
+                <div class="ft">Patient File Archive</div>
+                <div class="fd">Upload patient files — lab results, X-rays, referral letters — each linked directly to a
+                    specific patient record.</div>
+            </div>
+            <div class="fc">
+                <div class="fn">04</div>
+                <div class="fi2">💊</div>
+                <div class="ft">Pharmacy Intelligence</div>
+                <div class="fd">Complete drug records with AI-generated clinical descriptions, dosage info, and
+                    contraindication notes.</div>
+            </div>
+            <div class="fc">
+                <div class="fn">05</div>
+                <div class="fi2">📅</div>
+                <div class="ft">Appointments</div>
+                <div class="fd">Schedule, track, and complete patient appointments with physician assignment and
+                    follow-up notes.</div>
+            </div>
+            <div class="fc">
+                <div class="fn">06</div>
+                <div class="fi2">☁️</div>
+                <div class="ft">Live Supabase Sync</div>
+                <div class="fd">All data persists instantly — patients, drugs, appointments, diagnoses, files — with RLS
+                    security enabled.</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="div"></div>
+    <div class="pq reveal">Medicine is the science of uncertainty and the art of probability — now powered by
+        intelligence.</div>
+    <div class="div"></div>
+
+    <!-- ═══ ABOUT / HOW IT WORKS ═══ -->
+    <section id="about">
+        <div class="sl">How It Works</div>
+        <h2>From <em>registration</em> to report — in seconds.</h2>
+        <div class="fg-grid reveal" style="margin-top: 48px;">
+            <div class="fc">
+                <div class="fn">I</div>
+                <div class="ft">Register Patient</div>
+                <div class="fd">Enter patient details once. A unique ID is automatically generated — CM-2025-0001-XYZ.
+                    All records link to this patient forever.</div>
+            </div>
+            <div class="fc">
+                <div class="fn">II</div>
+                <div class="ft">Diagnose & Report</div>
+                <div class="fd">Enter the doctor's diagnosis, medications, and lab orders. AI generates a formal
+                    clinical report instantly — print or save.</div>
+            </div>
+            <div class="fc">
+                <div class="fn">III</div>
+                <div class="ft">Manage & Track</div>
+                <div class="fd">Schedule appointments, upload files to patient records, manage pharmacy stock —
+                    everything synced to the cloud in real-time.</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="div"></div>
+
+    <!-- ═══ CTA ═══ -->
+    <section style="text-align: center; padding: 120px 56px;">
+        <div class="sl">Ready?</div>
+        <h2 style="margin-bottom: 28px;">Start managing your <em>clinic</em> today.</h2>
+        <p
+            style="font-size: 14px; color: var(--font-secondary); max-width: 480px; margin: 0 auto 36px; line-height: 1.85;">
+            All features built-in. Supabase-powered. No installation required.<br>Open the dashboard and begin.
+        </p>
+        <a href="dashboard.html"><button class="btn-p" style="font-size: 12px; padding: 16px 44px;">Enter ClinicMaster
+                →</button></a>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <div class="footer">
+        <div class="footer-logo">Clinic<em>Master</em></div>
+        <div class="footer-text">© 2025 ClinicMaster — Premium Medical Intelligence. All rights reserved.</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
