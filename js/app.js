@@ -187,32 +187,54 @@ function initLetterbox() {
 
 /* ── CUSTOM APP BAR (DESKTOP) ────────────────────────────── */
 function initTopbar() {
-    // Check if we are in the Nativefier build
     const isDesktop = navigator.userAgent.includes('ClinicMasterDesktop') || window.location.href.includes('?desktop=true');
     if (!isDesktop) return;
 
     if (document.getElementById('app-bar')) return;
 
-    // Add class to body immediately (even before DOMContentLoaded if possible)
     if (document.body) document.body.classList.add('is-desktop');
     else document.addEventListener('DOMContentLoaded', () => document.body.classList.add('is-desktop'));
 
     const bar = document.createElement('div');
     bar.id = 'app-bar';
     bar.innerHTML = `
-        <div class="ab-drag"></div>
-        <div class="ab-title">ClinicMaster — Intelligence</div>
+        <div class="ab-left">
+            <div class="ab-btn" title="Menu">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </div>
+            <div class="ab-btn" title="Toggle Sidebar" onclick="document.body.classList.toggle('sb-collapsed')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+            </div>
+            <div class="ab-sep"></div>
+            <div class="ab-btn" title="Back" onclick="window.history.back()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </div>
+            <div class="ab-btn" title="Forward" onclick="window.history.forward()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </div>
+        </div>
+        
+        <div class="ab-drag">
+            <span class="ab-title">ClinicMaster — Intelligence</span>
+        </div>
+        
         <div class="ab-controls">
-            <div class="ab-btn min" title="Minimize" onclick="toast('Minimize via taskbar','ok')">—</div>
-            <div class="ab-btn" style="color:#ef4444" title="Exit" onclick="if(confirm('Close ClinicMaster?')){window.close()}">✕</div>
+            <div class="ab-btn win-btn" title="Minimize" onclick="toast('Minimize is handled by OS','ok')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </div>
+            <div class="ab-btn win-btn" title="Maximize" onclick="toast('Double-click title bar to resize','ok')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+            </div>
+            <div class="ab-btn win-btn close" title="Exit" onclick="if(confirm('Close ClinicMaster Intelligence?')){window.close()}">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </div>
         </div>
     `;
 
-    // Inject as first child
     if (document.body) document.body.insertAdjacentElement('afterbegin', bar);
     else document.addEventListener('DOMContentLoaded', () => document.body.insertAdjacentElement('afterbegin', bar));
 
-    console.log('💎 Native Desktop Mode Active');
+    console.log('💎 Premium Native Desktop Active');
 }
 
 // Aggressive Topbar Init: Run right away
