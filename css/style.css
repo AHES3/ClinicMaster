@@ -980,15 +980,22 @@ h2 em {
   left: 0;
   width: 100%;
   height: 32px;
-  background: #1a1a1a;
-  border-bottom: 1px solid #333;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 8px;
+  padding: 0;
   z-index: 100000;
   font-family: var(--sans);
-  color: #fff;
+  color: var(--font-primary);
+}
+
+.ab-left {
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+  -webkit-app-region: no-drag;
 }
 
 .ab-drag {
@@ -997,30 +1004,30 @@ h2 em {
   -webkit-app-region: drag;
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding-left: 12px;
 }
 
 .ab-title {
   font-size: 10px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #888;
+  color: var(--font-secondary);
   font-weight: 500;
   pointer-events: none;
+  opacity: 0.7;
 }
 
-.ab-left,
 .ab-controls {
   display: flex;
   align-items: center;
-  gap: 4px;
   -webkit-app-region: no-drag;
+  height: 100%;
 }
 
 .ab-sep {
   width: 1px;
   height: 14px;
-  background: #333;
+  background: var(--border);
   margin: 0 4px;
 }
 
@@ -1031,20 +1038,29 @@ h2 em {
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  color: #999;
+  color: var(--font-secondary);
   transition: all 0.2s;
   cursor: pointer !important;
 }
 
 .ab-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--accent-blue);
 }
 
 .ab-btn.win-btn {
-  width: 32px;
+  width: 46px;
   height: 32px;
   border-radius: 0;
+  color: var(--font-primary);
+}
+
+.ab-btn.win-btn svg {
+  stroke-width: 1.2;
+}
+
+.ab-btn.win-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .ab-btn.win-btn.close:hover {
@@ -1054,6 +1070,7 @@ h2 em {
 
 .ab-btn svg {
   pointer-events: none;
+  stroke-width: 1.8;
 }
 
 /* Sidebar and app-shell adjustments */
