@@ -1,39 +1,53 @@
 
 /**
- * ClinicMaster Desktop Bridge v12.0
- * Reinforced Window Controls & Clipboard Sync
+ * ClinicMaster Desktop Bridge v13.0
+ * The "God-Mode" Window Controller
  */
 (function () {
-    console.log('💎 ClinicMaster Bridge v12.0 Active');
+    console.log('💎 ClinicMaster Bridge v13.0: God-Mode Engaged');
 
-    // 1. WINDOW CONTROLS
-    // We use a high-level catch for clicks
+    function getWindow() {
+        try {
+            const electron = window.require ? window.require('electron') : require('electron');
+            // Try standard remote
+            if (electron.remote) return electron.remote.getCurrentWindow();
+            // Try process bridge
+            if (window.process && window.process.mainModule) {
+                return window.process.mainModule.require('electron').remote.getCurrentWindow();
+            }
+        } catch (e) { return null; }
+        return null;
+    }
+
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('.win-btn');
         if (!btn) return;
 
-        try {
-            const electron = window.require ? window.require('electron') : require('electron');
-            const remote = electron.remote;
-            const win = remote.getCurrentWindow();
+        e.preventDefault();
+        e.stopPropagation();
 
-            const type = btn.getAttribute('title');
-            if (type === 'Minimize') win.minimize();
-            else if (type === 'Maximize') {
+        const win = getWindow();
+        const type = btn.getAttribute('title');
+
+        if (type === 'Minimize') {
+            if (win) win.minimize();
+            else console.warn('Native Minimize Blocked');
+        }
+        else if (type === 'Maximize') {
+            if (win) {
                 if (win.isMaximized()) win.unmaximize();
                 else win.maximize();
-            } else if (type === 'Exit') {
-                win.close();
+            } else {
+                console.warn('Native Maximize Blocked');
             }
-        } catch (err) {
-            // Fallback for standard Close
-            if (btn.classList.contains('close')) window.close();
-            console.error('Bridge Error:', err);
+        }
+        else if (type === 'Exit' || btn.classList.contains('close')) {
+            if (win) win.close();
+            else window.close(); // Browser fallback
         }
     }, true);
 
-    // 2. MAGIC SYNC (Clipboard)
-    // Automatically watches for tokens from the Zen browser
+    // Magic Sync (Clipboard)
     setInterval(() => {
         try {
             const electron = window.require ? window.require('electron') : require('electron');
@@ -41,11 +55,6 @@
             if (text && text.includes('CLINICMASTER_AUTH:')) {
                 const tokenData = text.split('CLINICMASTER_AUTH:')[1];
                 electron.clipboard.clear();
-
-                // Show a nice notification in the console
-                console.log('✨ Auth Sync Successful');
-
-                // Apply token and jump to dashboard
                 const hash = tokenData.includes('#') ? tokenData : '#' + tokenData;
                 window.location.href = 'dashboard.html' + hash;
             }
