@@ -1,6 +1,21 @@
+# Nativefier builds
+win32-x64-*/
+win32-ia32-*/
+linux-x64-*/
+osx-x64-*/
+*-template-*/
+
+# Executables
+*.exe
+*.zip
+*.tar.gz
+
+# Secrets & Config
 *.json
 !package.json
 !manifest.json
-node_modules/
 .env
 .DS_Store
+
+# Dependencies
+node_modules/

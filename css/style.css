@@ -974,6 +974,62 @@ h2 em {
   background: rgba(239, 68, 68, .06);
 }
 
+#app-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 32px;
+  background: var(--bg-main);
+  border-bottom: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 99999;
+  -webkit-app-region: drag;
+  font-family: var(--sans);
+}
+
+.ab-title {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--font-secondary);
+  pointer-events: none;
+}
+
+.ab-controls {
+  display: flex;
+  gap: 12px;
+  -webkit-app-region: no-drag;
+}
+
+.ab-btn {
+  font-size: 12px;
+  color: var(--font-secondary);
+  cursor: none;
+  transition: color 0.2s;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ab-btn:hover {
+  color: var(--font-primary);
+}
+
+.ab-btn.close:hover {
+  color: #ef4444;
+}
+
+/* Sidebar and app-shell adjustments */
+.app-shell {
+  height: calc(100vh - 32px);
+}
+
 .bs.lg {
   padding: 13px 28px;
   font-size: 11px;
@@ -1516,6 +1572,31 @@ tr:hover td {
   font-size: 18px;
 }
 
+.sb {
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  border-right: 1.5px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: transform .4s cubic-bezier(.16, 1, .3, 1);
+  /* Desktop Mode: Make sidebar top draggable */
+  -webkit-app-region: drag;
+}
+
+.sbb,
+.sbn,
+.sbbot,
+.sb-section-label,
+.ni,
+.dbs {
+  /* Ensure children don't block dragging, but keep interactive elements clickable */
+  -webkit-app-region: no-drag;
+}
+
 .sb-toggle:hover {
   background: rgba(61, 123, 240, .2);
 }
@@ -1756,4 +1837,27 @@ tr:hover td {
 .fg textarea {
   min-height: 100px;
   resize: vertical;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DESKTOP APP OVERRIDES (TOPBAR & SIDEBAR)
+   ══════════════════════════════════════════════════════════════ */
+body.is-desktop {
+  padding-top: 32px !important;
+}
+
+body.is-desktop .app-shell,
+body.is-desktop .sb {
+  height: calc(100vh - 32px) !important;
+  top: 32px !important;
+}
+
+#app-bar {
+  z-index: 100000 !important;
+  /* Hidden by default, shown by JS adding .is-desktop */
+  display: none;
+}
+
+body.is-desktop #app-bar {
+  display: flex;
 }

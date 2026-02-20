@@ -185,6 +185,39 @@ function initLetterbox() {
     }, 400);
 }
 
+/* ── CUSTOM APP BAR (DESKTOP) ────────────────────────────── */
+function initTopbar() {
+    // Check if we are in the Nativefier build
+    const isDesktop = navigator.userAgent.includes('ClinicMasterDesktop') || window.location.href.includes('?desktop=true');
+    if (!isDesktop) return;
+
+    if (document.getElementById('app-bar')) return;
+
+    // Add class to body immediately (even before DOMContentLoaded if possible)
+    if (document.body) document.body.classList.add('is-desktop');
+    else document.addEventListener('DOMContentLoaded', () => document.body.classList.add('is-desktop'));
+
+    const bar = document.createElement('div');
+    bar.id = 'app-bar';
+    bar.innerHTML = `
+        <div class="ab-drag"></div>
+        <div class="ab-title">ClinicMaster — Intelligence</div>
+        <div class="ab-controls">
+            <div class="ab-btn min" title="Minimize" onclick="toast('Minimize via taskbar','ok')">—</div>
+            <div class="ab-btn" style="color:#ef4444" title="Exit" onclick="if(confirm('Close ClinicMaster?')){window.close()}">✕</div>
+        </div>
+    `;
+
+    // Inject as first child
+    if (document.body) document.body.insertAdjacentElement('afterbegin', bar);
+    else document.addEventListener('DOMContentLoaded', () => document.body.insertAdjacentElement('afterbegin', bar));
+
+    console.log('💎 Native Desktop Mode Active');
+}
+
+// Aggressive Topbar Init: Run right away
+initTopbar();
+
 /* ── SCROLL EFFECTS ──────────────────────────────────────── */
 function initScrollReveal() {
     const check = () => {
@@ -236,7 +269,7 @@ function initSidebar() {
 
             <div class="sb-section-label">Clinical</div>
             <a href="pharmacy.html" class="ni" data-page="pharmacy">
-                <svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>Pharmacy</a>
+                <svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>Pharmacy</a>
             <a href="diagnoses.html" class="ni" data-page="diagnoses">
                 <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>Diagnoses</a>
             <a href="appointments.html" class="ni" data-page="appointments">
@@ -371,9 +404,13 @@ async function checkAuth() {
     const path = window.location.pathname;
 
     if (!session) {
-        // Only redirect if we definitely have no session
         sessionStorage.clear();
-        if (!path.includes('auth.html') && !path.includes('index.html') && path !== '/' && path !== '') {
+
+        // 1. Is this the index page? (Checked via global marker or path)
+        const isLanding = window.IS_LANDING === true || path.endsWith('/') || path.endsWith('index.html');
+        const isAuthPage = path.includes('auth.html');
+
+        if (!isLanding && !isAuthPage) {
             window.location.href = 'auth.html';
         }
         return null;
@@ -450,11 +487,12 @@ async function signOut() {
 
 /* ── INIT COMMON ─────────────────────────────────────────── */
 async function initCommon() {
+    // initTopbar is now called aggressively at script load
     initCursor();
     const user = await checkAuth();
-    initSidebar(); // Inject sidebar first
-    updateSidebarUser(); // Then update user info
-    applyRoleRestrictions(); // And apply restrictions
+    initSidebar();
+    updateSidebarUser();
+    applyRoleRestrictions();
     initModals();
 
     // Index page link adjustment
