@@ -1,24 +1,22 @@
 
 /**
- * ClinicMaster Desktop Bridge v13.0
- * The "God-Mode" Window Controller
+ * ClinicMaster Desktop Bridge v14.0
+ * Performance Optimized & Secure Bridge
  */
 (function () {
-    console.log('💎 ClinicMaster Bridge v13.0: God-Mode Engaged');
+    console.log('💎 ClinicMaster Bridge v14.0: Focus-Mode Active');
 
-    function getWindow() {
+    // 1. SAFE ELECTRON RESOLVER
+    function getElectron() {
         try {
-            const electron = window.require ? window.require('electron') : require('electron');
-            // Try standard remote
-            if (electron.remote) return electron.remote.getCurrentWindow();
-            // Try process bridge
-            if (window.process && window.process.mainModule) {
-                return window.process.mainModule.require('electron').remote.getCurrentWindow();
-            }
+            // We use window.require if available (node-integration)
+            return window.require ? window.require('electron') : null;
         } catch (e) { return null; }
-        return null;
     }
 
+    const electron = getElectron();
+
+    // 2. REINFORCED WINDOW CONTROLS
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('.win-btn');
         if (!btn) return;
@@ -26,38 +24,49 @@
         e.preventDefault();
         e.stopPropagation();
 
-        const win = getWindow();
-        const type = btn.getAttribute('title');
+        try {
+            const remote = electron ? electron.remote : null;
+            if (!remote) throw new Error('Remote Module Blocked');
 
-        if (type === 'Minimize') {
-            if (win) win.minimize();
-            else console.warn('Native Minimize Blocked');
-        }
-        else if (type === 'Maximize') {
-            if (win) {
+            const win = remote.getCurrentWindow();
+            const type = btn.getAttribute('title');
+
+            if (type === 'Minimize') win.minimize();
+            else if (type === 'Maximize') {
                 if (win.isMaximized()) win.unmaximize();
                 else win.maximize();
-            } else {
-                console.warn('Native Maximize Blocked');
             }
-        }
-        else if (type === 'Exit' || btn.classList.contains('close')) {
-            if (win) win.close();
-            else window.close(); // Browser fallback
+            else if (type === 'Exit' || btn.classList.contains('close')) {
+                win.close();
+            }
+        } catch (err) {
+            console.error('Window Control Error:', err.message);
+            // Universal fallback for Exit
+            if (btn.classList.contains('close')) window.close();
         }
     }, true);
 
-    // Magic Sync (Clipboard)
-    setInterval(() => {
+    // 3. SECURE AUTH SYNC (Event-Based)
+    // Instead of looping, we only check when the app gets focus
+    window.addEventListener('focus', () => {
         try {
-            const electron = window.require ? window.require('electron') : require('electron');
+            if (!electron || !electron.clipboard) return;
+
             const text = electron.clipboard.readText();
-            if (text && text.includes('CLINICMASTER_AUTH:')) {
+            if (text && text.startsWith('CLINICMASTER_AUTH:')) {
                 const tokenData = text.split('CLINICMASTER_AUTH:')[1];
-                electron.clipboard.clear();
-                const hash = tokenData.includes('#') ? tokenData : '#' + tokenData;
-                window.location.href = 'dashboard.html' + hash;
+
+                // Security: Verify it looks like a token before clearing
+                if (tokenData.includes('access_token')) {
+                    electron.clipboard.clear();
+                    console.log('✨ Auth Sync: Securely retrieved token from focus event');
+                    const hash = tokenData.includes('#') ? tokenData : '#' + tokenData;
+                    window.location.href = 'dashboard.html' + hash;
+                }
             }
-        } catch (e) { }
-    }, 1000);
+        } catch (e) {
+            console.error('Sync Error:', e);
+        }
+    });
+
 })();
