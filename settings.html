@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings — ClinicMaster</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@200;300;400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="cd"></div>
+    <div id="cr"></div>
+    <div id="lbt"></div>
+    <div id="lbb"></div>
+    <div class="grain"></div>
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div id="toast"><span class="tdot"></span><span id="tmsg">Done</span></div>
+
+    <button class="sb-toggle" onclick="document.querySelector('.sb').classList.toggle('open')">☰</button>
+
+    <div class="app-shell">
+        <!-- ═══ SIDEBAR ═══ -->
+        <aside class="sb">
+            <div class="sbb"><a href="index.html" style="text-decoration:none;color:inherit">Clinic<em>Master</em></a>
+            </div>
+            <div class="sbn">
+                <div class="sb-section-label">Main</div>
+                <a href="dashboard.html" class="ni" data-page="dashboard">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                    </svg>Overview</a>
+                <a href="patients.html" class="ni" data-page="patients">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>Patients</a>
+                <div class="sb-section-label">Clinical</div>
+                <a href="diagnoses.html" class="ni" data-page="diagnoses">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>Diagnoses</a>
+                <a href="files.html" class="ni" data-page="files">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                    </svg>Files</a>
+                <div class="sb-section-label">System</div>
+                <a href="settings.html" class="ni" data-page="settings">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="3" />
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                    </svg>Settings</a>
+            </div>
+            <div class="sbbot">
+                <div class="uch">
+                    <div class="uav">DR</div>
+                    <div>
+                        <div class="unm">Dr. Admin</div>
+                        <div class="url2">Physician</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ═══ MAIN ═══ -->
+        <main class="main-content panel-animate">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Settings <em>& Preferences</em></div>
+                    <div class="page-subtitle">Manage your clinical workspace and practice access.</div>
+                </div>
+            </div>
+
+            <div style="max-width: 600px;">
+                <!-- Doctor Only: Secret Key -->
+                <div id="doctor-settings" style="display:none;">
+                    <div class="section-divider">
+                        <div class="sl">Practice Access</div>
+                    </div>
+                    <div class="auth-card" style="max-width: none; padding: 30px; margin-top:20px;">
+                        <div style="display:flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="font-family: var(--serif); font-size: 20px; margin-bottom: 5px;">Staff Access
+                                    Key</h3>
+                                <p style="font-size: 12px; color: var(--font-secondary);">Give this key to your
+                                    secretary to link your clinical records.</p>
+                            </div>
+                            <div id="key-display"
+                                style="font-family: monospace; font-size: 24px; padding: 10px 20px; background: var(--blue-light); color: var(--accent-blue); border-radius: var(--rs); letter-spacing: 2px; font-weight: bold; border: 1px dashed var(--accent-blue);">
+                                Loading...
+                            </div>
+                        </div>
+                        <button class="bs blue" style="margin-top: 20px; width: 100%;" onclick="copyKey()">Copy Access
+                            Key</button>
+                    </div>
+                </div>
+
+                <!-- Profile Info -->
+                <div class="section-divider" style="margin-top: 40px;">
+                    <div class="sl">Account Profile</div>
+                </div>
+                <div class="tw" style="margin-top: 20px; padding: 20px;">
+                    <div style="display:grid; grid-template-columns: 1fr; gap: 20px;">
+                        <div class="fg">
+                            <label>Professional Name</label>
+                            <input type="text" id="prof-name" readonly>
+                        </div>
+                        <div class="fg">
+                            <label>Email Address</label>
+                            <input type="text" id="prof-email" readonly>
+                        </div>
+                        <div class="fg">
+                            <label>Account Role</label>
+                            <input type="text" id="prof-role" readonly>
+                        </div>
+                        <div id="linked-doc-info" style="display:none;">
+                            <div class="fg">
+                                <label>Linked Physician</label>
+                                <input type="text" id="prof-linked" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="bs dng lg" style="margin-top: 40px; width: 100%;" onclick="signOut()">Sign Out of
+                    ClinicMaster</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+    <script>
+        async function loadSettings() {
+            await loadAll();
+            if (!USER) return;
+
+            const meta = USER.user_metadata || {};
+            const role = meta.role || 'doctor';
+
+            document.getElementById('prof-name').value = meta.full_name || USER.email.split('@')[0];
+            document.getElementById('prof-email').value = USER.email;
+            document.getElementById('prof-role').value = role.charAt(0).toUpperCase() + role.slice(1);
+
+            if (role === 'doctor') {
+                document.getElementById('doctor-settings').style.display = 'block';
+                fetchSecretKey();
+            } else if (role === 'secretary') {
+                document.getElementById('linked-doc-info').style.display = 'block';
+                document.getElementById('prof-linked').value = meta.linked_doctor_name || 'Linked Physician';
+            }
+        }
+
+        async function fetchSecretKey() {
+            const { data, error } = await sb.from('cm_doctor_access')
+                .select('secret_key')
+                .eq('doctor_id', USER.id)
+                .single();
+
+            if (data) {
+                document.getElementById('key-display').textContent = data.secret_key;
+            } else {
+                document.getElementById('key-display').textContent = 'NOT FOUND';
+            }
+        }
+
+        function copyKey() {
+            const key = document.getElementById('key-display').textContent;
+            navigator.clipboard.writeText(key);
+            toast('Access Key copied to clipboard!', 'ok');
+        }
+
+        document.addEventListener('DOMContentLoaded', loadSettings);
+    </script>
+</body>
+
+</html>

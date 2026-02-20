@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Setup — ClinicMaster</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@200;300;400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        .setup-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .setup-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            width: 100%;
+            max-width: 800px;
+            padding: 60px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .role-box {
+            border: 1.5px solid var(--border);
+            padding: 40px;
+            border-radius: var(--r);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .role-box:hover {
+            border-color: var(--accent-blue);
+            background: #ffffff;
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .role-box.selected {
+            border-color: var(--accent-blue);
+            background: var(--blue-light);
+        }
+
+        .role-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .role-title {
+            font-family: var(--serif);
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .role-desc {
+            font-size: 13px;
+            color: var(--font-secondary);
+            line-height: 1.6;
+        }
+
+        .setup-step {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 400px;
+            margin: 40px auto 0;
+            text-align: left;
+        }
+
+        .setup-step.active {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grain"></div>
+    <div id="cd"></div>
+    <div id="cr"></div>
+
+    <div class="setup-container">
+        <div class="setup-card reveal">
+            <div class="logo" style="margin-bottom: 20px; font-size: 28px;">Clinic<em>Master</em></div>
+            <h2 style="font-family: var(--serif); font-size: 36px; margin-bottom: 10px;">Complete Your Profile</h2>
+            <p style="color: var(--font-secondary); font-size: 14px;">One last step to personalize your clinical
+                workspace.</p>
+
+            <div id="role-selection">
+                <div class="roles-grid">
+                    <div class="role-box" onclick="selectSetupRole('doctor')">
+                        <div class="role-icon">🩺</div>
+                        <div class="role-title">I am a Doctor</div>
+                        <div class="role-desc">Manage patients, generate AI reports, and lead your medical team.</div>
+                    </div>
+                    <div class="role-box" onclick="selectSetupRole('secretary')">
+                        <div class="role-icon">📋</div>
+                        <div class="role-title">I am a Secretary</div>
+                        <div class="role-desc">Register patients and manage files for an existing physician.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctor Setup -->
+            <div id="step-doctor" class="setup-step">
+                <div class="fg">
+                    <label>Professional Name</label>
+                    <input type="text" id="doc-name" placeholder="Dr. Alexander Sterling">
+                </div>
+                <p style="font-size: 11px; color: var(--font-secondary);">This name will appear on all your generated
+                    medical reports.</p>
+                <button class="bs sol lg" onclick="finishDoctorSetup()" style="margin-top: 10px;">Create
+                    Workspace</button>
+            </div>
+
+            <!-- Secretary Setup -->
+            <div id="step-secretary" class="setup-step">
+                <div class="fg">
+                    <label>Your Professional Name</label>
+                    <input type="text" id="sec-name" placeholder="A. Smith (Medical Assistant)">
+                </div>
+                <div class="fg" style="margin-top:15px">
+                    <label>Doctor's Secret Key</label>
+                    <input type="text" id="sec-key" placeholder="Enter the key provided by your doctor">
+                </div>
+                <p style="font-size: 11px; color: var(--font-secondary);">This connects your account to your physician's
+                    database. Get the key from your Doctor's setup page.</p>
+                <button class="bs sol lg" onclick="finishSecretarySetup()" style="margin-top: 10px;">Join
+                    Practice</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"><span class="tdot"></span><span id="tmsg">Done</span></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+    <script>
+        let selectedRole = '';
+
+        function selectSetupRole(role) {
+            selectedRole = role;
+            document.querySelectorAll('.role-box').forEach(b => b.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+
+            document.getElementById('step-doctor').classList.toggle('active', role === 'doctor');
+            document.getElementById('step-secretary').classList.toggle('active', role === 'secretary');
+        }
+
+        async function finishDoctorSetup() {
+            const name = document.getElementById('doc-name').value.trim();
+            if (!name) return toast('Please enter your name', 'err');
+
+            // Generate a random 8-char secret key
+            const secretKey = Math.random().toString(36).substring(2, 10).toUpperCase();
+
+            // 1. Update User Metadata
+            const { error: metaError } = await sb.auth.updateUser({
+                data: { role: 'doctor', full_name: name }
+            });
+            if (metaError) return toast(metaError.message, 'err');
+
+            // 2. Insert into Lookup Table for Secretaries
+            const { error: dbError } = await sb.from('cm_doctor_access').insert({
+                doctor_id: USER.id,
+                secret_key: secretKey,
+                doctor_name: name
+            });
+
+            if (dbError) {
+                // If already exists (unlikely with UUID), just continue
+                if (!dbError.message.includes('unique')) return toast(dbError.message, 'err');
+            }
+
+            alert(`Your workspace is ready!\n\nGive this Secret Key to your Secretaries:\n${secretKey}`);
+            window.location.href = 'dashboard.html';
+        }
+
+        async function finishSecretarySetup() {
+            const name = document.getElementById('sec-name').value.trim();
+            const key = document.getElementById('sec-key').value.trim().toUpperCase();
+
+            if (!name) return toast('Please enter your name', 'err');
+            if (!key) return toast('Enter the secret key', 'err');
+
+            // 1. Find the Doctor
+            const { data, error } = await sb.from('cm_doctor_access')
+                .select('doctor_id, doctor_name')
+                .eq('secret_key', key)
+                .single();
+
+            if (error || !data) return toast('Invalid Secret Key. Please verify with your doctor.', 'err');
+
+            // 2. Link Secretary to Doctor in Metadata
+            const { error: metaError } = await sb.auth.updateUser({
+                data: {
+                    role: 'secretary',
+                    full_name: name,
+                    linked_doctor_id: data.doctor_id,
+                    linked_doctor_name: data.doctor_name
+                }
+            });
+
+            if (metaError) return toast(metaError.message, 'err');
+
+            // 3. Clear existing workspace cache to force a fresh pull of doctor's data
+            sessionStorage.removeItem('cm_user');
+            sessionStorage.removeItem('cm_cache');
+
+            toast('Practice joined successfully!', 'ok');
+            setTimeout(() => window.location.href = 'dashboard.html', 1500);
+        }
+
+        // Initialize user after libs load
+        setTimeout(() => {
+            if (!USER) checkAuth();
+        }, 500);
+    </script>
+</body>
+
+</html>

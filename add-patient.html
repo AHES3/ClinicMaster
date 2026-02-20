@@ -184,13 +184,34 @@
 
         function handleNewPatientFiles(files) {
             for (const file of Array.from(files)) {
-                pendingFiles.push(file);
+                const id = 'PND-' + Date.now() + Math.random().toString(36).substr(2, 5);
+                pendingFiles.push({ id, file });
+            }
+            renderPendingFiles();
+        }
+
+        function renderPendingFiles() {
+            const container = document.getElementById('fl');
+            container.innerHTML = '';
+
+            pendingFiles.forEach(item => {
                 const el = document.createElement('div');
                 el.className = 'fit';
-                el.innerHTML = `<span class="fn2">📄 ${file.name}</span><span class="fm">${fmtSize(file.size)}</span>`;
-                document.getElementById('fl').prepend(el);
-            }
-            toast(files.length + ' file(s) queued for upload');
+                el.style = 'display: flex; justify-content: space-between; align-items: center;';
+                el.innerHTML = `
+                    <div>
+                        <span class="fn2">📄 ${item.file.name}</span>
+                        <span class="fm">${fmtSize(item.file.size)}</span>
+                    </div>
+                    <button class="bs dng" style="padding: 4px 8px; font-size: 10px;" onclick="removePendingFile('${item.id}')">✕</button>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function removePendingFile(id) {
+            pendingFiles = pendingFiles.filter(f => f.id !== id);
+            renderPendingFiles();
         }
 
         async function savePatient() {
@@ -221,13 +242,18 @@
 
             if (!await ins('cm_patients', row)) return;
 
-            // Upload queued files linked to this patient
-            for (const file of pendingFiles) {
+            // Upload queued files to storage and link metadata
+            for (const item of pendingFiles) {
+                const file = item.file;
+                const publicUrl = await up(file);
+                if (!publicUrl) continue;
+
                 const fileRow = {
                     id: 'FILE-' + Date.now() + Math.floor(Math.random() * 9999),
                     name: file.name, size: file.size, type: file.type,
                     patient_id: id, patient_name: row.name,
-                    date: new Date().toISOString()
+                    date: new Date().toISOString(),
+                    url: publicUrl
                 };
                 await ins('cm_files', fileRow);
             }

@@ -262,20 +262,28 @@
             }
 
             for (const file of Array.from(files)) {
+                toast('Uploading: ' + file.name + '...', 'ok');
+
+                // 1. Upload to Storage first
+                const publicUrl = await up(file);
+                if (!publicUrl) continue;
+
+                // 2. Insert metadata with permanent cloud URL
                 const row = {
                     id: 'FILE-' + Date.now() + Math.floor(Math.random() * 9999),
                     name: file.name, size: file.size, type: file.type,
                     patient_id: pid, patient_name: pat.name,
                     date: new Date().toISOString(),
-                    url: URL.createObjectURL(file) // Local blob for immediate viewing
+                    url: publicUrl
                 };
+
                 if (await ins('cm_files', row)) {
                     DB.files.unshift(row);
                     const el = document.createElement('div');
                     el.className = 'fit';
                     el.innerHTML = `<span class="fn2">📄 ${file.name}</span><span class="fm">${fmtSize(file.size)} · ${pat.name}</span>`;
                     document.getElementById('fl').prepend(el);
-                    toast('Uploaded: ' + file.name + ' → ' + pat.name, 'ok');
+                    toast('Saved: ' + file.name, 'ok');
                 }
             }
             renderFiles();
@@ -365,8 +373,6 @@
             `;
 
             const viewer = document.getElementById('fp-viewer');
-            const dl = document.getElementById('fp-dl');
-            dl.href = f.url || '#';
 
             if (f.type?.includes('image')) {
                 viewer.innerHTML = `<img src="${f.url}" style="max-width:100%; max-height:500px; border-radius:var(--rs);">`;
@@ -377,7 +383,7 @@
                     <div style="text-align:center">
                         <div style="font-size:48px; margin-bottom:15px;">📄</div>
                         <p style="color:var(--font-secondary)">No preview available for this file type.</p>
-                        <a href="${f.url}" target="_blank" class="btn-p" style="margin-top:20px; display:inline-block; font-size:11px;">Open File</a>
+                        <a href="${f.url}" target="_blank" class="btn-p" style="margin-top:20px; display:inline-block; font-size:11px;">Open / Download File</a>
                     </div>
                 `;
             }
