@@ -9,6 +9,7 @@ const sb = supabase.createClient(SBU, SBK);
 
 /* Global data store */
 let DB = { patients: [], drugs: [], appointments: [], files: [], diagnoses: [] };
+let USER = null; // Current logged-in user
 
 /* ── CRUD HELPERS ────────────────────────────────────────── */
 async function qry(table, order = 'created') {
@@ -137,6 +138,21 @@ function initSidebar() {
             });
         });
     }
+
+    // Add Sign Out to sidebar if not present
+    const sidebarBottom = document.querySelector('.sbbot');
+    if (sidebarBottom && !document.getElementById('sb-logout')) {
+        const logout = document.createElement('div');
+        logout.id = 'sb-logout';
+        logout.style = 'margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--sidebar-border);';
+        logout.innerHTML = `
+            <div class="ni" style="padding: 0; border: none; background: transparent; color: rgba(255,255,255,0.4);" onclick="signOut()">
+                <svg viewBox="0 0 24 24" style="width:14px; height:14px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                <span style="font-size: 10px; letter-spacing: 1px;">SIGN OUT</span>
+            </div>
+        `;
+        sidebarBottom.appendChild(logout);
+    }
 }
 
 /* ── POPULATE PATIENT SELECTS ────────────────────────────── */
@@ -205,11 +221,102 @@ function fmtSize(bytes) {
     return (bytes / 1048576).toFixed(1) + ' MB';
 }
 
+/* ── AUTH HELPERS ────────────────────────────────────────── */
+async function checkAuth() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+        // Redirect to auth if not on index or auth page
+        const path = window.location.pathname;
+        if (!path.includes('auth.html') && !path.includes('index.html') && path !== '/' && path !== '') {
+            window.location.href = 'auth.html';
+        }
+        return null;
+    }
+    USER = session.user;
+    updateSidebarUser();
+    applyRoleRestrictions();
+    return USER;
+}
+
+function updateSidebarUser() {
+    if (!USER) return;
+    const meta = USER.user_metadata || {};
+    const role = meta.role || 'doctor';
+
+    let initials = 'DR';
+    if (role === 'secretary') initials = 'SC';
+
+    document.querySelectorAll('.uav').forEach(el => el.textContent = initials);
+    document.querySelectorAll('.unm').forEach(el => {
+        const name = USER.email.split('@')[0];
+        el.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+    });
+    document.querySelectorAll('.url2').forEach(el => el.textContent = role.charAt(0).toUpperCase() + role.slice(1));
+}
+
+function applyRoleRestrictions() {
+    if (!USER) return;
+    const role = USER.user_metadata.role || 'doctor';
+
+    if (role === 'secretary') {
+        const path = window.location.pathname;
+        const restricted = ['pharmacy', 'diagnoses', 'appointments'];
+        if (restricted.some(p => path.includes(p))) {
+            toast('Access Denied: Doctors Only', 'err');
+            setTimeout(() => window.location.href = 'dashboard.html', 1500);
+        }
+
+        // Global CSS to hide retrieval links everywhere for secretary
+        const style = document.createElement('style');
+        style.textContent = `
+            .ni[data-page="pharmacy"], .ni[data-page="diagnoses"], .ni[data-page="appointments"] { display: none !important; }
+            .sb-section-label:nth-of-type(2) { display: none !important; }
+            a[href*="files.html"]:not(.ni), a[href*="diagnoses.html"]:not(.ni) { display: none !important; }
+            .mc:nth-child(2), .mc:nth-child(3), .mc:nth-child(4) { display: none !important; }
+            table td button.dng, .page-actions { display: none !important; }
+        `;
+        document.head.appendChild(style);
+
+        // Hide retrieval UI on files.html if secretary
+        if (path.includes('files')) {
+            const table = document.querySelector('.tw');
+            const search = document.querySelector('.sbar2');
+            const divider = document.querySelector('.section-divider');
+            if (table) table.style.display = 'none';
+            if (search) search.style.display = 'none';
+            if (divider) divider.style.display = 'none';
+
+            const main = document.querySelector('.main-content');
+            if (main && !document.getElementById('sec-msg')) {
+                const msg = document.createElement('div');
+                msg.id = 'sec-msg';
+                msg.style = 'background: rgba(61,123,240,0.05); border: 1px dashed var(--border); padding: 40px; text-align: center; border-radius: var(--r); margin-top: 20px;';
+                msg.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">🔐 Restricted Access</div><p style="color: var(--font-secondary); font-size: 14px;">Secretaries are authorized for <b>Secure Upload Only</b>. Records can only be retrieved by medical staff.</p>';
+                main.appendChild(msg);
+            }
+        }
+    }
+}
+
+async function signOut() {
+    await sb.auth.signOut();
+    window.location.href = 'index.html';
+}
+
 /* ── INIT COMMON ─────────────────────────────────────────── */
-function initCommon() {
+async function initCommon() {
     initCursor();
+    const user = await checkAuth();
     initSidebar();
     initModals();
+
+    // Index page link adjustment
+    if (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname === '') {
+        const ctaButtons = document.querySelectorAll('a[href="dashboard.html"]');
+        ctaButtons.forEach(btn => {
+            if (!user) btn.href = 'auth.html';
+        });
+    }
 }
 
 /* Run on every page */
