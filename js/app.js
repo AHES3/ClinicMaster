@@ -209,10 +209,10 @@ function initTopbar() {
         </div>
         
         <div class="ab-controls">
-            <div class="ab-btn win-btn" title="Minimize" onclick="toast('Please use Taskbar or Win+Down','ok')">
+            <div class="ab-btn win-btn" title="Minimize" onclick="window.dispatchEvent(new Event('clinic-minimize'))">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             </div>
-            <div class="ab-btn win-btn" title="Maximize" onclick="toast('Double-click the top bar to resize','ok')">
+            <div class="ab-btn win-btn" title="Maximize" onclick="window.dispatchEvent(new Event('clinic-maximize'))">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
             </div>
             <div class="ab-btn win-btn close" title="Exit" onclick="window.close()">
@@ -231,7 +231,7 @@ function initTopbar() {
         });
     }
 
-    console.log('💎 Premium Native Desktop Active — Height: 44px');
+    console.log('💎 Premium Native Desktop Active — v4.0 (Functional Buttons)');
 }
 
 // Aggressive Topbar Init: Run right away
