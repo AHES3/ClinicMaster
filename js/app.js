@@ -204,15 +204,15 @@ function initTopbar() {
             </div>
         </div>
         
-        <div class="ab-drag">
+        <div class="ab-drag" ondblclick="/* Double click to maximize is native */">
             <span class="ab-title">ClinicMaster — Intelligence</span>
         </div>
         
         <div class="ab-controls">
-            <div class="ab-btn win-btn" title="Minimize" onclick="if(window.process){ const remote = require('electron').remote; remote.getCurrentWindow().minimize(); } else { toast('Minimize handled by OS','ok') }">
+            <div class="ab-btn win-btn" title="Minimize" onclick="toast('Please use Taskbar or Win+Down','ok')">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             </div>
-            <div class="ab-btn win-btn" title="Maximize" onclick="if(window.process){ const remote = require('electron').remote; const win = remote.getCurrentWindow(); win.isMaximized() ? win.unmaximize() : win.maximize(); } else { toast('Double-click title bar to resize','ok') }">
+            <div class="ab-btn win-btn" title="Maximize" onclick="toast('Double-click the top bar to resize','ok')">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
             </div>
             <div class="ab-btn win-btn close" title="Exit" onclick="window.close()">
