@@ -241,52 +241,18 @@
             const btn = document.getElementById('google-login-btn');
             btn.classList.add('loading');
 
-            const isDesktop = navigator.userAgent.includes('ClinicMasterDesktop') || window.location.href.includes('?desktop=true');
+            const redirectUrl = window.location.origin + window.location.pathname.replace('auth.html', 'dashboard.html');
 
-            if (isDesktop) {
-                // Show instruction overlay for desktop
-                const overlay = document.createElement('div');
-                overlay.id = 'desktop-auth-overlay';
-                overlay.style = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.9);z-index:200000;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--font-primary);text-align:center;padding:20px;backdrop-filter:blur(15px);';
-                overlay.innerHTML = `
-                    <div class="logo" style="margin-bottom:30px; font-size:32px;">ClinicMaster</div>
-                    <h2 style="font-family:var(--serif); font-size:28px; margin-bottom:15px;">Authenticating...</h2>
-                    <p style="color:var(--font-secondary); max-width:400px; margin-bottom:30px; line-height:1.6;">We've opened your default browser for a secure Google Login. Please complete the process there and then return to this window.</p>
-                    <button class="btn-p" onclick="window.location.reload()">I've Logged In, Refresh</button>
-                    <button class="btn-g" style="margin-top:15px; border-color:var(--border); color:var(--font-secondary);" onclick="document.getElementById('desktop-auth-overlay').remove(); document.getElementById('google-login-btn').classList.remove('loading');">Cancel</button>
-                `;
-                document.body.appendChild(overlay);
-
-                const redirectUrl = window.location.origin + window.location.pathname.replace('auth.html', 'dashboard.html');
-                const { data, error } = await sb.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                        redirectTo: redirectUrl,
-                        skipBrowserRedirect: true
-                    }
-                });
-
-                if (error) {
-                    overlay.remove();
-                    btn.classList.remove('loading');
-                    return toast(error.message, 'err');
+            const { data, error } = await sb.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: redirectUrl
                 }
+            });
 
-                if (data && data.url) {
-                    window.open(data.url, '_blank');
-                }
-            } else {
-                const redirectUrl = window.location.origin + window.location.pathname.replace('auth.html', 'dashboard.html');
-                const { data, error } = await sb.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                        redirectTo: redirectUrl
-                    }
-                });
-                if (error) {
-                    btn.classList.remove('loading');
-                    toast(error.message, 'err');
-                }
+            if (error) {
+                btn.classList.remove('loading');
+                toast(error.message, 'err');
             }
         }
     </script>
