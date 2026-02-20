@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Authenticating — ClinicMaster</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #f9fafb;
+            color: #111827;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .btn {
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="logo">ClinicMaster</div>
+        <h2>Login Successful!</h2>
+        <p>You can now return to the app.</p>
+        <a id="app-link" href="#" class="btn">Open ClinicMaster Desktop</a>
+    </div>
+
+    <script>
+        // Zoom-style logic: capture the hash and try to open the app
+        const hash = window.location.hash;
+        if (hash) {
+            const link = document.getElementById('app-link');
+            // This custom protocol 'clinicmaster://' will be handled by our new build
+            link.href = 'clinicmaster://' + hash;
+
+            // Try to open it automatically
+            window.location.href = link.href;
+        }
+    </script>
+</body>
+
+</html>

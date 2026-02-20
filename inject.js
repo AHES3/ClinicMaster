@@ -1,47 +1,41 @@
 
 /**
- * ClinicMaster Desktop Bridge v8.0
- * This script runs with privileged access to bypass browser security.
+ * ClinicMaster Desktop Bridge v9.0
+ * Handles native window controls and Zoom-style deep linking.
  */
 document.addEventListener('DOMContentLoaded', () => {
-    const hookWindowControls = () => {
-        try {
-            const electron = require('electron');
-            const remote = electron.remote;
-            const currentWin = remote ? remote.getCurrentWindow() : null;
+    const electron = require('electron');
+    const remote = electron.remote;
 
-            // We use Event Delegation for better performance
-            document.body.addEventListener('click', (e) => {
-                const btn = e.target.closest('.win-btn');
-                if (!btn) return;
+    // 1. Hook the Buttons (Wait for them to appear)
+    const hookButtons = () => {
+        const btns = {
+            min: document.querySelector('[title="Minimize"]'),
+            max: document.querySelector('[title="Maximize"]'),
+            exit: document.querySelector('[title="Exit"]')
+        };
 
-                const title = btn.getAttribute('title');
-
-                if (title === 'Minimize') {
-                    if (currentWin) currentWin.minimize();
-                    else electron.ipcRenderer.send('window-minimize');
-                }
-                else if (title === 'Maximize') {
-                    if (currentWin) {
-                        if (currentWin.isMaximized()) currentWin.unmaximize();
-                        else currentWin.maximize();
-                    } else {
-                        electron.ipcRenderer.send('window-maximize');
-                    }
-                }
-                else if (title === 'Exit' || btn.classList.contains('close')) {
-                    window.close();
-                }
-            });
-
-            console.log('✅ Desktop Bridge: Window controls hooked.');
-        } catch (err) {
-            console.error('❌ Desktop Bridge Error:', err);
-        }
+        if (btns.min) btns.min.onclick = () => remote.getCurrentWindow().minimize();
+        if (btns.max) btns.max.onclick = () => {
+            const win = remote.getCurrentWindow();
+            if (win.isMaximized()) win.unmaximize(); else win.maximize();
+        };
+        if (btns.exit) btns.exit.onclick = () => window.close();
     };
 
-    hookWindowControls();
+    // Watch for when app.js creates the top bar
+    const observer = new MutationObserver(() => hookButtons());
+    observer.observe(document.body, { childList: true, subtree: true });
+    hookButtons();
 
-    // Safety check for dynamic reloads
-    window.addEventListener('clinic-rehook', hookWindowControls);
+    // 2. Handle Deep Linking (The "Zoom" return)
+    // When the app starts with a token, we handle it here
+    electron.ipcRenderer.on('deeplink', (event, url) => {
+        if (url.includes('access_token')) {
+            const token = url.split('access_token=')[1].split('&')[0];
+            // Save token and reload
+            localStorage.setItem('supabase.auth.token', token);
+            window.location.href = 'dashboard.html';
+        }
+    });
 });
