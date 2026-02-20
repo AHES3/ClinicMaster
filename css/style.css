@@ -1025,8 +1025,10 @@ h2 em {
 .ab-controls {
   display: flex;
   align-items: center;
-  -webkit-app-region: no-drag;
+  -webkit-app-region: no-drag !important;
   height: 100%;
+  position: relative;
+  z-index: 999999;
 }
 
 .ab-sep {
@@ -1037,8 +1039,8 @@ h2 em {
 }
 
 .ab-btn {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1046,6 +1048,10 @@ h2 em {
   color: var(--font-secondary);
   transition: all 0.2s;
   cursor: pointer !important;
+  pointer-events: all !important;
+  -webkit-app-region: no-drag !important;
+  position: relative;
+  z-index: 1000000;
 }
 
 .ab-btn:hover {

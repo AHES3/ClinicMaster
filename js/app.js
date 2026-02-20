@@ -235,7 +235,7 @@ function initTopbar() {
         });
     }
 
-    console.log('💎 Premium Native Desktop Active — v8.0 (Fully Functional)');
+    console.log('💎 Premium Native Desktop Active — v10.0 (Master Hook)');
 }
 
 // Aggressive Topbar Init: Run right away
