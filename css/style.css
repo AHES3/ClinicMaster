@@ -1070,13 +1070,28 @@ h2 em {
   stroke-width: 1.2;
 }
 
-.ab-btn.win-btn:hover {
-  background: rgba(0, 0, 0, 0.08);
+.ab-btn.win-btn[title="Minimize"]:hover {
+  background: rgba(59, 130, 246, 0.1) !important;
+  color: #3b82f6 !important;
+}
+
+.ab-btn.win-btn[title="Maximize"]:hover {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: #10b981 !important;
 }
 
 .ab-btn.win-btn.close:hover {
   background: #e81123 !important;
   color: #fff !important;
+}
+
+.ab-btn.win-btn svg {
+  stroke-width: 1.5;
+  opacity: 0.8;
+}
+
+.ab-btn.win-btn:hover svg {
+  opacity: 1;
 }
 
 .ab-btn svg {
