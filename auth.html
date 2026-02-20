@@ -264,10 +264,17 @@
                 `;
                 document.body.appendChild(overlay);
 
+                // Calculate redirect URL: dashboard.html in the same directory
+                let redirectUrl = window.location.origin + window.location.pathname.replace('auth.html', 'dashboard.html');
+                if (window.location.hostname.includes('github.io')) {
+                    // GH Pages sanity check
+                    console.log('GitHub Pages detected. Redirecting to:', redirectUrl);
+                }
+
                 const { data, error } = await sb.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: window.location.origin + window.location.pathname.replace('auth.html', 'dashboard.html'),
+                        redirectTo: redirectUrl,
                         skipBrowserRedirect: true
                     }
                 });
@@ -288,10 +295,11 @@
                     a.remove();
                 }
             } else {
+                const redirectUrl = window.location.origin + window.location.pathname.replace('auth.html', 'dashboard.html');
                 const { data, error } = await sb.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: window.location.origin + window.location.pathname.replace('auth.html', 'dashboard.html')
+                        redirectTo: redirectUrl
                     }
                 });
                 if (error) {
