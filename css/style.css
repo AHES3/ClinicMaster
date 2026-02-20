@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
    CLINICMASTER — Premium Medical Intelligence
-   Cinematic Luxury Dark Editorial Design System
+   Cinematic Luxury Editorial Design System
    ═══════════════════════════════════════════════════════════ */
 
 /* ── DESIGN TOKENS ─────────────────────────────────────────── */
@@ -17,8 +17,8 @@
   --border: #E8E8EC;
   --surface: #F9F9FB;
   --surface2: #F3F3F7;
-  --sidebar-bg: #0A0A0F;
-  --sidebar-border: rgba(255, 255, 255, .06);
+  --sidebar-bg: #F9F9FB;
+  --sidebar-border: #E8E8EC;
   --gold: #C9A96E;
   --gold-light: rgba(201, 169, 110, .12);
   --shadow-sm: 0 1px 4px rgba(61, 123, 240, .07), 0 1px 2px rgba(0, 0, 0, .04);
@@ -628,11 +628,11 @@ h2 em {
   border-bottom: 1px solid var(--sidebar-border);
   font-family: var(--serif);
   font-size: 20px;
-  color: var(--font-inverse);
+  color: var(--font-primary);
 }
 
 .sbb em {
-  color: #7BAAFF;
+  color: var(--accent-blue);
   font-style: italic;
 }
 
@@ -650,7 +650,7 @@ h2 em {
   font-size: 11px;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, .4);
+  color: var(--font-secondary);
   cursor: none;
   transition: color .2s, background .2s;
   border-left: 2.5px solid transparent;
@@ -658,8 +658,8 @@ h2 em {
 
 .ni:hover,
 .ni.active {
-  color: var(--font-inverse);
-  background: rgba(61, 123, 240, .14);
+  color: var(--accent-blue);
+  background: var(--blue-light);
   border-left-color: var(--accent-blue);
 }
 
@@ -678,7 +678,8 @@ h2 em {
   font-size: 8px;
   letter-spacing: .3em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, .2);
+  color: var(--accent-blue);
+  opacity: 0.6;
 }
 
 .sbbot {
@@ -707,12 +708,12 @@ h2 em {
 
 .unm {
   font-size: 12px;
-  color: rgba(255, 255, 255, .72);
+  color: var(--font-primary);
 }
 
 .url2 {
   font-size: 10px;
-  color: rgba(255, 255, 255, .3);
+  color: var(--font-secondary);
   margin-top: 1px;
 }
 
@@ -722,7 +723,7 @@ h2 em {
   gap: 8px;
   padding: 12px 24px 6px;
   font-size: 10px;
-  color: rgba(255, 255, 255, .3);
+  color: var(--font-secondary);
 }
 
 .dd {
