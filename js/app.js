@@ -192,9 +192,6 @@ function initTopbar() {
 
     if (document.getElementById('app-bar')) return;
 
-    if (document.body) document.body.classList.add('is-desktop');
-    else document.addEventListener('DOMContentLoaded', () => document.body.classList.add('is-desktop'));
-
     const bar = document.createElement('div');
     bar.id = 'app-bar';
     bar.innerHTML = `
@@ -231,10 +228,17 @@ function initTopbar() {
         </div>
     `;
 
-    if (document.body) document.body.insertAdjacentElement('afterbegin', bar);
-    else document.addEventListener('DOMContentLoaded', () => document.body.insertAdjacentElement('afterbegin', bar));
+    if (document.body) {
+        document.body.insertAdjacentElement('afterbegin', bar);
+        document.body.classList.add('is-desktop');
+    } else {
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.insertAdjacentElement('afterbegin', bar);
+            document.body.classList.add('is-desktop');
+        });
+    }
 
-    console.log('💎 Premium Native Desktop Active');
+    console.log('💎 Premium Native Desktop Active — Height: 44px');
 }
 
 // Aggressive Topbar Init: Run right away
@@ -509,7 +513,9 @@ async function signOut() {
 
 /* ── INIT COMMON ─────────────────────────────────────────── */
 async function initCommon() {
-    // initTopbar is now called aggressively at script load
+    // Prevent UI flicker by hiding content until auth is checked
+    if (document.body) document.body.classList.add('loading-auth');
+
     initCursor();
     const user = await checkAuth();
     initSidebar();
@@ -524,6 +530,9 @@ async function initCommon() {
             if (!user) btn.href = 'auth.html';
         });
     }
+
+    // Reveal UI
+    if (document.body) document.body.classList.remove('loading-auth');
 }
 
 /* Run on every page */

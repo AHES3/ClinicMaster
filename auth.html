@@ -370,7 +370,14 @@
                 }
 
                 if (data && data.url) {
-                    window.open(data.url, '_blank');
+                    // Using a dynamic link to force external browser opening in Nativefier
+                    const a = document.createElement('a');
+                    a.href = data.url;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
                 }
             } else {
                 const { data, error } = await sb.auth.signInWithOAuth({
