@@ -39,8 +39,11 @@ async function upd(table, id, patch) {
     await sb.from(table).update(patch).eq('id', id);
 }
 
-/* ── LOAD ALL DATA ───────────────────────────────────────── */
 async function loadAll() {
+    // Ensure we have a user before querying
+    if (!USER) await checkAuth();
+    if (!USER) return false;
+
     try {
         [DB.patients, DB.drugs, DB.appointments, DB.files, DB.diagnoses] = await Promise.all([
             qry('cm_patients'),
@@ -82,8 +85,16 @@ function initCursor() {
     const cr = document.getElementById('cr');
     if (!cd || !cr) return;
     let mx = 0, my = 0, rx = 0, ry = 0;
+    let firstMove = true;
+
     document.addEventListener('mousemove', e => {
         mx = e.clientX; my = e.clientY;
+        if (firstMove) {
+            rx = mx; ry = my; // Snap to initial position
+            cd.style.opacity = '1';
+            cr.style.opacity = '1';
+            firstMove = false;
+        }
         cd.style.left = mx + 'px'; cd.style.top = my + 'px';
     });
     (function loop() {
