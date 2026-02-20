@@ -13,12 +13,20 @@ let USER = null; // Current logged-in user
 
 /* ── CRUD HELPERS ────────────────────────────────────────── */
 async function qry(table, order = 'created') {
-    const { data, error } = await sb.from(table).select('*').order(order, { ascending: false }).limit(500);
+    if (!USER) return [];
+    const { data, error } = await sb.from(table)
+        .select('*')
+        .eq('doctor_id', USER.id) // Enforce privacy
+        .order(order, { ascending: false })
+        .limit(500);
     return error ? [] : data || [];
 }
 
 async function ins(table, row) {
-    const { error } = await sb.from(table).insert(row);
+    if (!USER) return false;
+    // Automatically attach owner ID
+    const rowWithOwner = { ...row, doctor_id: USER.id };
+    const { error } = await sb.from(table).insert(rowWithOwner);
     if (error) toast('DB: ' + error.message, 'err');
     return !error;
 }
@@ -248,7 +256,8 @@ function updateSidebarUser() {
 
     document.querySelectorAll('.uav').forEach(el => el.textContent = initials);
     document.querySelectorAll('.unm').forEach(el => {
-        const name = USER.email.split('@')[0];
+        // Use full_name if available, otherwise email prefix
+        const name = meta.full_name || USER.email.split('@')[0];
         el.textContent = name.charAt(0).toUpperCase() + name.slice(1);
     });
     document.querySelectorAll('.url2').forEach(el => el.textContent = role.charAt(0).toUpperCase() + role.slice(1));

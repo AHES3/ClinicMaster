@@ -223,6 +223,10 @@
                     </div>
                     <div id="signup-fields" style="display: none; flex-direction: column; gap: 20px;">
                         <div class="fg">
+                            <label>Full Name</label>
+                            <input type="text" id="full-name" placeholder="Dr. John Smith">
+                        </div>
+                        <div class="fg">
                             <label>Phone Number (for 2FA)</label>
                             <input type="tel" id="phone" placeholder="+1234567890">
                         </div>
@@ -348,14 +352,15 @@
             const email = document.getElementById('email').value;
             const pass = document.getElementById('pass').value;
             const phone = document.getElementById('phone').value;
+            const full_name = document.getElementById('full-name').value;
 
             if (mode === 'signup') {
                 const { data, error } = await sb.auth.signUp({
                     email,
                     password: pass,
                     options: {
-                        data: { role, phone },
-                        emailRedirectTo: window.location.origin + '/dashboard.html'
+                        data: { role, phone, full_name },
+                        emailRedirectTo: window.location.origin + window.location.pathname.replace('auth.html', 'dashboard.html')
                     }
                 });
                 if (error) return toast(error.message, 'err');
