@@ -243,13 +243,6 @@
 
             const isDesktop = navigator.userAgent.includes('ClinicMasterDesktop') || window.location.href.includes('?desktop=true');
 
-            // OAuth requires a web server (http/https). file:// protocol will not work.
-            if (!isDesktop && window.location.protocol === 'file:') {
-                btn.classList.remove('loading');
-                toast('Google Login requires a local server. Please run this via http://localhost', 'err');
-                return;
-            }
-
             if (isDesktop) {
                 // Show instruction overlay for desktop
                 const overlay = document.createElement('div');
@@ -264,13 +257,7 @@
                 `;
                 document.body.appendChild(overlay);
 
-                // Calculate redirect URL: dashboard.html in the same directory
-                let redirectUrl = window.location.origin + window.location.pathname.replace('auth.html', 'dashboard.html');
-                if (window.location.hostname.includes('github.io')) {
-                    // GH Pages sanity check
-                    console.log('GitHub Pages detected. Redirecting to:', redirectUrl);
-                }
-
+                const redirectUrl = window.location.origin + window.location.pathname.replace('auth.html', 'dashboard.html');
                 const { data, error } = await sb.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
@@ -286,13 +273,7 @@
                 }
 
                 if (data && data.url) {
-                    const a = document.createElement('a');
-                    a.href = data.url;
-                    a.target = '_blank';
-                    a.rel = 'noopener noreferrer';
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
+                    window.open(data.url, '_blank');
                 }
             } else {
                 const redirectUrl = window.location.origin + window.location.pathname.replace('auth.html', 'dashboard.html');

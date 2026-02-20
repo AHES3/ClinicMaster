@@ -204,18 +204,18 @@ function initTopbar() {
             </div>
         </div>
         
-        <div class="ab-drag" ondblclick="/* Double click to maximize is native */">
+        <div class="ab-drag" style="-webkit-app-region: drag;">
             <span class="ab-title">ClinicMaster — Intelligence</span>
         </div>
         
         <div class="ab-controls">
-            <div class="ab-btn win-btn" title="Minimize" onclick="window.dispatchEvent(new Event('clinic-minimize'))">
+            <div class="ab-btn win-btn" title="Minimize">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             </div>
-            <div class="ab-btn win-btn" title="Maximize" onclick="window.dispatchEvent(new Event('clinic-maximize'))">
+            <div class="ab-btn win-btn" title="Maximize">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
             </div>
-            <div class="ab-btn win-btn close" title="Exit" onclick="window.close()">
+            <div class="ab-btn win-btn close" title="Exit" onclick="window.dispatchEvent(new Event('clinic-close'))">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </div>
         </div>
@@ -231,7 +231,7 @@ function initTopbar() {
         });
     }
 
-    console.log('💎 Premium Native Desktop Active — v4.0 (Functional Buttons)');
+    console.log('💎 Premium Native Desktop Active — v7.0 (Custom UI Hooked)');
 }
 
 // Aggressive Topbar Init: Run right away
