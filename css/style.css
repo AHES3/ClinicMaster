@@ -1080,7 +1080,8 @@ h2 em {
 
 /* Sidebar and app-shell adjustments */
 .app-shell {
-  height: calc(100vh - 32px);
+  min-height: 100vh;
+  position: relative;
 }
 
 .bs.lg {
@@ -1618,25 +1619,15 @@ tr:hover td {
   border-radius: var(--rs);
   background: var(--sidebar-bg);
   border: 1px solid var(--sidebar-border);
-  color: var(--font-inverse);
+  color: var(--font-primary);
   cursor: none;
   align-items: center;
   justify-content: center;
   font-size: 18px;
 }
 
+/* Desktop Mode: Make sidebar top draggable */
 .sb {
-  width: var(--sidebar-width);
-  background: var(--sidebar-bg);
-  border-right: 1.5px solid var(--sidebar-border);
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  transition: transform .4s cubic-bezier(.16, 1, .3, 1);
-  /* Desktop Mode: Make sidebar top draggable */
   -webkit-app-region: drag;
 }
 

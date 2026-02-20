@@ -319,7 +319,7 @@ function initSidebar() {
                 </div>
             </div>
             <div id="sb-logout" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--sidebar-border);">
-                <div class="ni" style="padding: 0; border: none; background: transparent; color: rgba(255,255,255,0.4);" onclick="signOut()">
+                <div class="ni" style="padding: 0; border: none; background: transparent; color: var(--font-secondary);" onclick="signOut()">
                     <svg viewBox="0 0 24 24" style="width:14px; height:14px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
                     <span style="font-size: 10px; letter-spacing: 1px;">SIGN OUT</span>
                 </div>
