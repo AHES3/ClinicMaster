@@ -187,7 +187,11 @@ function initLetterbox() {
 
 /* ── CUSTOM APP BAR (DESKTOP) ────────────────────────────── */
 function initTopbar() {
-    const isDesktop = navigator.userAgent.includes('ClinicMasterDesktop') || window.location.href.includes('?desktop=true');
+    const isDesktop =
+        navigator.userAgent.includes('ClinicMasterDesktop') ||
+        window.location.search.includes('desktop=true') ||
+        (window.process && window.process.type === 'renderer');
+
     if (!isDesktop) return;
 
     if (document.getElementById('app-bar')) return;
@@ -215,7 +219,7 @@ function initTopbar() {
             <div class="ab-btn win-btn" title="Maximize">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
             </div>
-            <div class="ab-btn win-btn close" title="Exit" onclick="window.dispatchEvent(new Event('clinic-close'))">
+            <div class="ab-btn win-btn close" title="Exit">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </div>
         </div>
@@ -231,7 +235,7 @@ function initTopbar() {
         });
     }
 
-    console.log('💎 Premium Native Desktop Active — v7.0 (Custom UI Hooked)');
+    console.log('💎 Premium Native Desktop Active — v8.0 (Fully Functional)');
 }
 
 // Aggressive Topbar Init: Run right away
