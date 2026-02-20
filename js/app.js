@@ -38,7 +38,7 @@ async function loadAll() {
             qry('cm_patients'),
             qry('cm_drugs'),
             qry('cm_appointments'),
-            qry('cm_files'),
+            qry('cm_files', 'date'),
             qry('cm_diagnoses', 'date')
         ]);
         setStatus('Connected · ' + DB.patients.length + ' patients', true);
