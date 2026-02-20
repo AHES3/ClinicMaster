@@ -328,10 +328,16 @@
         }
 
         async function signInWithGoogle() {
+            // OAuth requires a web server (http/https). file:// protocol will not work.
+            if (window.location.protocol === 'file:') {
+                toast('Google Login requires a local server. Please run this via http://localhost', 'err');
+                return;
+            }
+
             const { data, error } = await sb.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: window.location.origin + '/dashboard.html'
+                    redirectTo: window.location.origin + window.location.pathname.replace('auth.html', 'dashboard.html')
                 }
             });
             if (error) toast(error.message, 'err');

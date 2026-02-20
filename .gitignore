@@ -1,0 +1,6 @@
+*.json
+!package.json
+!manifest.json
+node_modules/
+.env
+.DS_Store
