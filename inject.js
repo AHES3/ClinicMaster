@@ -1,57 +1,59 @@
 
 /**
- * ClinicMaster Desktop Bridge v20.0
- * The "Multi-Channel IPC" Diagnostic Edition
+ * ClinicMaster Desktop Bridge v21.0
+ * The "Developer's Debug" Edition
  */
 (function () {
-    console.log('💎 ClinicMaster Bridge v20.0: Multi-Channel IPC Active');
+    console.log('💎 ClinicMaster Bridge v21.0: Active');
 
-    function forceAction(action) {
+    function openDevTools() {
         try {
-            // Discovery: Try to find Electron in any way possible
             const electron = window.require ? window.require('electron') : (window.electron || null);
-            if (!electron) {
-                console.error('❌ OS Control Failed: Electron module not found. Check --node-integration.');
-                return false;
-            }
+            const remote = electron?.remote || (window.require ? window.require('@electron/remote') : null);
+            if (remote) remote.getCurrentWindow().webContents.openDevTools();
+            else console.error('❌ Cannot open DevTools: Remote module missing.');
+        } catch (e) {
+            console.error('❌ DevTools Error:', e.message);
+        }
+    }
 
-            const ipc = electron.ipcRenderer;
+    // 1. Keyboard Shortcuts (Bypass Radeon Screenshot)
+    window.addEventListener('keydown', (e) => {
+        // F12 or Ctrl+Alt+I
+        if (e.key === 'F12' || (e.ctrlKey && e.altKey && e.code === 'KeyI')) {
+            e.preventDefault();
+            openDevTools();
+        }
+    });
+
+    // 2. Window Controls
+    function forceAction(action) {
+        console.log(`🚀 Attempting [${action}]...`);
+        try {
+            const electron = window.require ? window.require('electron') : (window.electron || null);
+            if (!electron) throw new Error('Electron module not found. Check --node-integration flag.');
+
             const remote = electron.remote || (window.require ? window.require('@electron/remote') : null);
 
-            // Strategy A: The Remote Module (Direct Window Control)
             if (remote) {
                 const win = remote.getCurrentWindow();
-                if (win) {
-                    if (action === 'Minimize') {
-                        win.minimize();
-                        console.log('✅ Native Minimize triggered via Remote');
-                    } else if (action === 'Maximize') {
-                        win.isMaximized() ? win.unmaximize() : win.maximize();
-                        console.log('✅ Native Maximize/Unmaximize triggered via Remote');
-                    }
+                if (action === 'Minimize') win.minimize();
+                else if (action === 'Maximize') win.isMaximized() ? win.unmaximize() : win.maximize();
+                console.log(`✅ [${action}] SUCCESS via Remote`);
+                return true;
+            } else {
+                console.warn('⚠️ Remote module is undefined. Trying IPC fallback...');
+                const ipc = electron.ipcRenderer;
+                if (ipc) {
+                    ipc.send('window-minimize');
+                    ipc.send('minimize');
+                    ipc.send('window-maximize');
+                    ipc.send('maximize');
                     return true;
                 }
             }
-
-            // Strategy B: Multi-Channel IPC (Shouting in different rooms)
-            if (ipc) {
-                if (action === 'Minimize') {
-                    ipc.send('window-minimize');
-                    ipc.send('minimize');
-                    ipc.send('window:minimize');
-                    console.log('📡 Sent Minimize signal to multiple IPC channels');
-                }
-                else if (action === 'Maximize') {
-                    ipc.send('window-maximize');
-                    ipc.send('maximize');
-                    ipc.send('window:maximize');
-                    ipc.send('window-toggle-maximize');
-                    console.log('📡 Sent Maximize signal to multiple IPC channels');
-                }
-                return true;
-            }
         } catch (e) {
-            console.error('❌ OS Control Error:', e);
+            console.error('❌ OS Control Error:', e.message);
         }
         return false;
     }
@@ -60,23 +62,21 @@
         const btn = e.target.closest('.win-btn');
         if (!btn) return;
 
-        // Visual Feedback (Proves JS is running)
         btn.style.transform = 'scale(0.85)';
-        btn.style.transition = 'transform 0.1s';
         setTimeout(() => btn.style.transform = '', 100);
 
         const type = btn.getAttribute('title');
 
-        if (type === 'Exit' || btn.classList.contains('close')) {
-            console.log('🚪 Exit requested. Calling window.close()');
+        if (type === 'Inspect') {
+            openDevTools();
+        } else if (type === 'Exit' || btn.classList.contains('close')) {
             window.close();
         } else {
-            const success = forceAction(type);
-            if (!success) console.warn(`⚠️ Could not send [${type}] signal - no bridge found.`);
+            forceAction(type);
         }
     }, true);
 
-    // Auth Sync (Focus-based)
+    // 3. Auth Sync
     window.addEventListener('focus', () => {
         try {
             const electron = window.require ? window.require('electron') : require('electron');

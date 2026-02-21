@@ -213,6 +213,9 @@ function initTopbar() {
         </div>
 
         <div class="ab-controls custom-only">
+            <div class="ab-btn win-btn" title="Inspect">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            </div>
             <div class="ab-btn win-btn" title="Minimize">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             </div>
@@ -228,7 +231,7 @@ function initTopbar() {
     document.body.insertAdjacentElement('afterbegin', bar);
     document.body.classList.add('is-desktop');
 
-    console.log('💎 Premium Native Desktop Active — v17.0 (Double-Button Protection)');
+    console.log('💎 Premium Native Desktop Active — v18.0 (Developer Tools Enabled)');
 }
 
 // Aggressive Topbar Init: Run right away
