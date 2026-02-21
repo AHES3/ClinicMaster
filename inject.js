@@ -1,67 +1,55 @@
 
 /**
- * ClinicMaster Desktop Bridge v15.0
- * The "Wall-Breaker" Edition
+ * ClinicMaster Desktop Bridge v18.0
+ * The "Low-Level Signal" Edition
  */
 (function () {
-    console.log('💎 ClinicMaster Bridge v15.0: Diagnostic Mode Engaged');
+    console.log('💎 ClinicMaster Bridge v18.0: Low-Level Signals Active');
 
-    function getElectron() {
+    function getIPC() {
         try {
-            // Path 1: Node integration
-            if (typeof require !== 'undefined') return require('electron');
-            // Path 2: Window Require
-            if (window.require) return window.require('electron');
-            // Path 3: Global bridge
-            if (window.electron) return window.electron;
+            const electron = window.require ? window.require('electron') : require('electron');
+            return electron.ipcRenderer;
         } catch (e) { return null; }
-        return null;
     }
 
-    const electron = getElectron();
-    if (!electron) console.error('❌ Critical: Electron not found. Check --node-integration flag.');
+    const ipc = getIPC();
 
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('.win-btn');
         if (!btn) return;
 
-        console.log('🔘 Button Click Detected:', btn.getAttribute('title'));
-        e.preventDefault();
-        e.stopPropagation();
+        // Visual Feedback: Prove the click was captured
+        btn.style.transform = 'scale(0.9)';
+        setTimeout(() => btn.style.transform = '', 100);
 
-        try {
-            // Find the Remote module (Nativefier's biggest hurdle)
-            const remote = electron.remote || (window.require ? window.require('@electron/remote') : null);
-            if (!remote) throw new Error('Remote module is disabled or missing.');
+        const type = btn.getAttribute('title');
+        console.log('📡 Sending Signal:', type);
 
-            const win = remote.getCurrentWindow();
-            const type = btn.getAttribute('title');
-
-            if (type === 'Minimize') win.minimize();
-            else if (type === 'Maximize') {
-                if (win.isMaximized()) win.unmaximize();
-                else win.maximize();
-            }
-            else if (type === 'Exit' || btn.classList.contains('close')) {
-                win.close();
-            }
-        } catch (err) {
-            console.error('❌ OS Control Error:', err.message);
-            // Fallback for Exit only
-            if (btn.classList.contains('close')) window.close();
+        if (type === 'Minimize') {
+            if (ipc) ipc.send('window-minimize');
+            // Try fallback if IPC is blocked
+            else if (window.electron && window.electron.ipcRenderer) window.electron.ipcRenderer.send('window-minimize');
+        }
+        else if (type === 'Maximize') {
+            if (ipc) ipc.send('window-maximize');
+            else if (window.electron && window.electron.ipcRenderer) window.electron.ipcRenderer.send('window-maximize');
+        }
+        else if (type === 'Exit' || btn.classList.contains('close')) {
+            window.close(); // Reliable browser standard
         }
     }, true);
 
-    // AUTH SYNC: Automatic refresh when you return to the app
+    // Focus-based Auth Sync (No performance hit)
     window.addEventListener('focus', () => {
-        if (!electron || !electron.clipboard) return;
-        const text = electron.clipboard.readText();
-        if (text && text.startsWith('CLINICMASTER_AUTH:')) {
-            const tokenData = text.split('CLINICMASTER_AUTH:')[1];
-            electron.clipboard.clear();
-            const hash = tokenData.includes('#') ? tokenData : '#' + tokenData;
-            window.location.href = 'dashboard.html' + hash;
-        }
+        try {
+            const electron = window.require ? window.require('electron') : require('electron');
+            const text = electron.clipboard.readText();
+            if (text && text.startsWith('CLINICMASTER_AUTH:')) {
+                const tokenData = text.split('CLINICMASTER_AUTH:')[1];
+                electron.clipboard.clear();
+                window.location.href = 'dashboard.html' + (tokenData.includes('#') ? tokenData : '#' + tokenData);
+            }
+        } catch (e) { }
     });
-
 })();
