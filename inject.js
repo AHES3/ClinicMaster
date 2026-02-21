@@ -24,6 +24,13 @@
     }
 
     // 1. Keyboard Shortcuts (Bypass Radeon Screenshot)
+    window.addEventListener('keydown', (e) => {
+        // F12 or Ctrl+Alt+I
+        if (e.key === 'F12' || (e.ctrlKey && e.altKey && e.code === 'KeyI')) {
+            e.preventDefault();
+            openDevTools();
+        }
+    });
 
     // 2. Window Controls
     function forceAction(action) {

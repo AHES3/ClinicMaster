@@ -1002,8 +1002,7 @@ h2 em {
 }
 
 .ab-left {
-  display: none !important;
-  /* Removed as requested */
+  display: flex;
   align-items: center;
   position: relative;
   z-index: 1000001;
