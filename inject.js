@@ -1,16 +1,23 @@
 /**
- * ClinicMaster Desktop Bridge v23.0
+ * ClinicMaster Desktop Bridge v24.0
  * The "Developer's Debug" Edition
  */
 (function () {
-    console.log('💎 ClinicMaster Bridge v23.0: Active');
+    console.log('💎 ClinicMaster Bridge v24.0: Active');
 
     function openDevTools() {
+        console.log('🛠️ Requesting DevTools...');
         try {
+            // Priority 1: Bridge
+            if (window.electron?.ipcRenderer) {
+                window.electron.ipcRenderer.send('window-dev-tools');
+                return;
+            }
+            // Priority 2: Remote/Legacy
             const electron = window.require ? window.require('electron') : (window.electron || null);
             const remote = electron?.remote || (window.require ? window.require('@electron/remote') : null);
             if (remote) remote.getCurrentWindow().webContents.openDevTools();
-            else console.error('❌ Cannot open DevTools: Remote module missing.');
+            else console.error('❌ Cannot open DevTools: No bridge or remote module found.');
         } catch (e) {
             console.error('❌ DevTools Error:', e.message);
         }

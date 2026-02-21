@@ -231,7 +231,7 @@ function initTopbar() {
     document.body.insertAdjacentElement('afterbegin', bar);
     document.body.classList.add('is-desktop');
 
-    console.log('💎 Premium Native Desktop Active — v23.0 (Bridge & IPC Fixed)');
+    console.log('💎 Premium Native Desktop Active — v24.0 (DevTools IPC Recovery)');
 }
 
 // Aggressive Topbar Init: Run right away
