@@ -1,9 +1,9 @@
 /**
- * ClinicMaster Desktop Bridge v22.0
+ * ClinicMaster Desktop Bridge v23.0
  * The "Developer's Debug" Edition
  */
 (function () {
-    console.log('💎 ClinicMaster Bridge v22.0: Active');
+    console.log('💎 ClinicMaster Bridge v23.0: Active');
 
     function openDevTools() {
         try {
@@ -29,27 +29,33 @@
     function forceAction(action) {
         console.log(`🚀 Attempting [${action}]...`);
         try {
-            const electron = window.require ? window.require('electron') : (window.electron || null);
-            if (!electron) throw new Error('Electron module not found. Check --node-integration flag.');
+            // Priority 1: Direct Preload Bridge (New way)
+            const ipc = window.electron?.ipcRenderer;
+            if (ipc) {
+                if (action === 'Minimize') ipc.send('window-minimize');
+                else if (action === 'Maximize') ipc.send('window-maximize');
+                else if (action === 'Inspect') ipc.send('window-dev-tools');
+                console.log(`✅ [${action}] Sent via Preload Bridge`);
+                return true;
+            }
 
-            const remote = electron.remote || (window.require ? window.require('@electron/remote') : null);
+            // Priority 2: Standard Electron Require
+            const electron = window.require ? window.require('electron') : (window.electron || null);
+            const remote = electron?.remote || (window.require ? window.require('@electron/remote') : null);
 
             if (remote) {
                 const win = remote.getCurrentWindow();
                 if (action === 'Minimize') win.minimize();
                 else if (action === 'Maximize') win.isMaximized() ? win.unmaximize() : win.maximize();
-                console.log(`✅ [${action}] SUCCESS via Remote`);
+                else if (action === 'Inspect') win.webContents.openDevTools();
+                console.log(`✅ [${action}] Success via Remote`);
                 return true;
-            } else {
-                console.warn('⚠️ Remote module is undefined. Trying IPC fallback...');
-                const ipc = electron.ipcRenderer;
-                if (ipc) {
-                    ipc.send('window-minimize');
-                    ipc.send('minimize');
-                    ipc.send('window-maximize');
-                    ipc.send('maximize');
-                    return true;
-                }
+            } else if (electron?.ipcRenderer) {
+                const legacyIpc = electron.ipcRenderer;
+                if (action === 'Minimize') legacyIpc.send('window-minimize');
+                else if (action === 'Maximize') legacyIpc.send('window-maximize');
+                else if (action === 'Inspect') legacyIpc.send('window-dev-tools');
+                return true;
             }
         } catch (e) {
             console.error('❌ OS Control Error:', e.message);

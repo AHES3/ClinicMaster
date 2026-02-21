@@ -231,7 +231,7 @@ function initTopbar() {
     document.body.insertAdjacentElement('afterbegin', bar);
     document.body.classList.add('is-desktop');
 
-    console.log('💎 Premium Native Desktop Active — v22.0 (Navigation & DevTools Fixed)');
+    console.log('💎 Premium Native Desktop Active — v23.0 (Bridge & IPC Fixed)');
 }
 
 // Aggressive Topbar Init: Run right away
