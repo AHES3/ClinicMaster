@@ -1,33 +1,57 @@
 
 /**
- * ClinicMaster Desktop Bridge v19.0
- * The "Brute-Force" OS Controller
+ * ClinicMaster Desktop Bridge v20.0
+ * The "Multi-Channel IPC" Diagnostic Edition
  */
 (function () {
-    console.log('💎 ClinicMaster Bridge v19.0: Brute Force Engaged');
+    console.log('💎 ClinicMaster Bridge v20.0: Multi-Channel IPC Active');
 
     function forceAction(action) {
         try {
-            const electron = window.require ? window.require('electron') : require('electron');
-
-            // Way 1: The 'Remote' Object (Most likely to work with our flags)
-            const remote = electron.remote || (window.require ? window.require('@electron/remote') : null);
-            if (remote) {
-                const win = remote.getCurrentWindow();
-                if (action === 'Minimize') win.minimize();
-                else if (action === 'Maximize') win.isMaximized() ? win.unmaximize() : win.maximize();
-                return true;
+            // Discovery: Try to find Electron in any way possible
+            const electron = window.require ? window.require('electron') : (window.electron || null);
+            if (!electron) {
+                console.error('❌ OS Control Failed: Electron module not found. Check --node-integration.');
+                return false;
             }
 
-            // Way 2: The Direct IPC (Nativefier standard)
             const ipc = electron.ipcRenderer;
+            const remote = electron.remote || (window.require ? window.require('@electron/remote') : null);
+
+            // Strategy A: The Remote Module (Direct Window Control)
+            if (remote) {
+                const win = remote.getCurrentWindow();
+                if (win) {
+                    if (action === 'Minimize') {
+                        win.minimize();
+                        console.log('✅ Native Minimize triggered via Remote');
+                    } else if (action === 'Maximize') {
+                        win.isMaximized() ? win.unmaximize() : win.maximize();
+                        console.log('✅ Native Maximize/Unmaximize triggered via Remote');
+                    }
+                    return true;
+                }
+            }
+
+            // Strategy B: Multi-Channel IPC (Shouting in different rooms)
             if (ipc) {
-                if (action === 'Minimize') ipc.send('window-minimize');
-                else if (action === 'Maximize') ipc.send('window-maximize');
+                if (action === 'Minimize') {
+                    ipc.send('window-minimize');
+                    ipc.send('minimize');
+                    ipc.send('window:minimize');
+                    console.log('📡 Sent Minimize signal to multiple IPC channels');
+                }
+                else if (action === 'Maximize') {
+                    ipc.send('window-maximize');
+                    ipc.send('maximize');
+                    ipc.send('window:maximize');
+                    ipc.send('window-toggle-maximize');
+                    console.log('📡 Sent Maximize signal to multiple IPC channels');
+                }
                 return true;
             }
         } catch (e) {
-            console.error('Brute Force Attempt Failed:', e.message);
+            console.error('❌ OS Control Error:', e);
         }
         return false;
     }
@@ -36,7 +60,7 @@
         const btn = e.target.closest('.win-btn');
         if (!btn) return;
 
-        // Shrink animation (Proves JS is working)
+        // Visual Feedback (Proves JS is running)
         btn.style.transform = 'scale(0.85)';
         btn.style.transition = 'transform 0.1s';
         setTimeout(() => btn.style.transform = '', 100);
@@ -44,10 +68,11 @@
         const type = btn.getAttribute('title');
 
         if (type === 'Exit' || btn.classList.contains('close')) {
+            console.log('🚪 Exit requested. Calling window.close()');
             window.close();
         } else {
             const success = forceAction(type);
-            console.log(`📡 Signal [${type}] sent:`, success ? 'SUCCESS' : 'FAILED');
+            if (!success) console.warn(`⚠️ Could not send [${type}] signal - no bridge found.`);
         }
     }, true);
 
