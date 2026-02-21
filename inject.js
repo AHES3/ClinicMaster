@@ -1,32 +1,38 @@
 
 /**
- * ClinicMaster Desktop Bridge v14.0
- * Performance Optimized & Secure Bridge
+ * ClinicMaster Desktop Bridge v15.0
+ * The "Wall-Breaker" Edition
  */
 (function () {
-    console.log('💎 ClinicMaster Bridge v14.0: Focus-Mode Active');
+    console.log('💎 ClinicMaster Bridge v15.0: Diagnostic Mode Engaged');
 
-    // 1. SAFE ELECTRON RESOLVER
     function getElectron() {
         try {
-            // We use window.require if available (node-integration)
-            return window.require ? window.require('electron') : null;
+            // Path 1: Node integration
+            if (typeof require !== 'undefined') return require('electron');
+            // Path 2: Window Require
+            if (window.require) return window.require('electron');
+            // Path 3: Global bridge
+            if (window.electron) return window.electron;
         } catch (e) { return null; }
+        return null;
     }
 
     const electron = getElectron();
+    if (!electron) console.error('❌ Critical: Electron not found. Check --node-integration flag.');
 
-    // 2. REINFORCED WINDOW CONTROLS
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('.win-btn');
         if (!btn) return;
 
+        console.log('🔘 Button Click Detected:', btn.getAttribute('title'));
         e.preventDefault();
         e.stopPropagation();
 
         try {
-            const remote = electron ? electron.remote : null;
-            if (!remote) throw new Error('Remote Module Blocked');
+            // Find the Remote module (Nativefier's biggest hurdle)
+            const remote = electron.remote || (window.require ? window.require('@electron/remote') : null);
+            if (!remote) throw new Error('Remote module is disabled or missing.');
 
             const win = remote.getCurrentWindow();
             const type = btn.getAttribute('title');
@@ -40,32 +46,21 @@
                 win.close();
             }
         } catch (err) {
-            console.error('Window Control Error:', err.message);
-            // Universal fallback for Exit
+            console.error('❌ OS Control Error:', err.message);
+            // Fallback for Exit only
             if (btn.classList.contains('close')) window.close();
         }
     }, true);
 
-    // 3. SECURE AUTH SYNC (Event-Based)
-    // Instead of looping, we only check when the app gets focus
+    // AUTH SYNC: Automatic refresh when you return to the app
     window.addEventListener('focus', () => {
-        try {
-            if (!electron || !electron.clipboard) return;
-
-            const text = electron.clipboard.readText();
-            if (text && text.startsWith('CLINICMASTER_AUTH:')) {
-                const tokenData = text.split('CLINICMASTER_AUTH:')[1];
-
-                // Security: Verify it looks like a token before clearing
-                if (tokenData.includes('access_token')) {
-                    electron.clipboard.clear();
-                    console.log('✨ Auth Sync: Securely retrieved token from focus event');
-                    const hash = tokenData.includes('#') ? tokenData : '#' + tokenData;
-                    window.location.href = 'dashboard.html' + hash;
-                }
-            }
-        } catch (e) {
-            console.error('Sync Error:', e);
+        if (!electron || !electron.clipboard) return;
+        const text = electron.clipboard.readText();
+        if (text && text.startsWith('CLINICMASTER_AUTH:')) {
+            const tokenData = text.split('CLINICMASTER_AUTH:')[1];
+            electron.clipboard.clear();
+            const hash = tokenData.includes('#') ? tokenData : '#' + tokenData;
+            window.location.href = 'dashboard.html' + hash;
         }
     });
 
