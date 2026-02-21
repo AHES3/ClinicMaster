@@ -1,10 +1,9 @@
-
 /**
- * ClinicMaster Desktop Bridge v21.0
+ * ClinicMaster Desktop Bridge v22.0
  * The "Developer's Debug" Edition
  */
 (function () {
-    console.log('💎 ClinicMaster Bridge v21.0: Active');
+    console.log('💎 ClinicMaster Bridge v22.0: Active');
 
     function openDevTools() {
         try {
@@ -71,6 +70,10 @@
             openDevTools();
         } else if (type === 'Exit' || btn.classList.contains('close')) {
             window.close();
+        } else if (type === 'Back') {
+            window.history.back();
+        } else if (type === 'Forward') {
+            window.history.forward();
         } else {
             forceAction(type);
         }

@@ -1001,6 +1001,16 @@ h2 em {
   -webkit-app-region: no-drag !important;
 }
 
+.ab-left {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1000001;
+  /* Above ab-drag */
+  -webkit-app-region: no-drag !important;
+  margin-right: auto;
+}
+
 .ab-drag {
   position: absolute;
   top: 0;
