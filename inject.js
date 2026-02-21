@@ -1,46 +1,57 @@
 
 /**
- * ClinicMaster Desktop Bridge v18.0
- * The "Low-Level Signal" Edition
+ * ClinicMaster Desktop Bridge v19.0
+ * The "Brute-Force" OS Controller
  */
 (function () {
-    console.log('💎 ClinicMaster Bridge v18.0: Low-Level Signals Active');
+    console.log('💎 ClinicMaster Bridge v19.0: Brute Force Engaged');
 
-    function getIPC() {
+    function forceAction(action) {
         try {
             const electron = window.require ? window.require('electron') : require('electron');
-            return electron.ipcRenderer;
-        } catch (e) { return null; }
-    }
 
-    const ipc = getIPC();
+            // Way 1: The 'Remote' Object (Most likely to work with our flags)
+            const remote = electron.remote || (window.require ? window.require('@electron/remote') : null);
+            if (remote) {
+                const win = remote.getCurrentWindow();
+                if (action === 'Minimize') win.minimize();
+                else if (action === 'Maximize') win.isMaximized() ? win.unmaximize() : win.maximize();
+                return true;
+            }
+
+            // Way 2: The Direct IPC (Nativefier standard)
+            const ipc = electron.ipcRenderer;
+            if (ipc) {
+                if (action === 'Minimize') ipc.send('window-minimize');
+                else if (action === 'Maximize') ipc.send('window-maximize');
+                return true;
+            }
+        } catch (e) {
+            console.error('Brute Force Attempt Failed:', e.message);
+        }
+        return false;
+    }
 
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('.win-btn');
         if (!btn) return;
 
-        // Visual Feedback: Prove the click was captured
-        btn.style.transform = 'scale(0.9)';
+        // Shrink animation (Proves JS is working)
+        btn.style.transform = 'scale(0.85)';
+        btn.style.transition = 'transform 0.1s';
         setTimeout(() => btn.style.transform = '', 100);
 
         const type = btn.getAttribute('title');
-        console.log('📡 Sending Signal:', type);
 
-        if (type === 'Minimize') {
-            if (ipc) ipc.send('window-minimize');
-            // Try fallback if IPC is blocked
-            else if (window.electron && window.electron.ipcRenderer) window.electron.ipcRenderer.send('window-minimize');
-        }
-        else if (type === 'Maximize') {
-            if (ipc) ipc.send('window-maximize');
-            else if (window.electron && window.electron.ipcRenderer) window.electron.ipcRenderer.send('window-maximize');
-        }
-        else if (type === 'Exit' || btn.classList.contains('close')) {
-            window.close(); // Reliable browser standard
+        if (type === 'Exit' || btn.classList.contains('close')) {
+            window.close();
+        } else {
+            const success = forceAction(type);
+            console.log(`📡 Signal [${type}] sent:`, success ? 'SUCCESS' : 'FAILED');
         }
     }, true);
 
-    // Focus-based Auth Sync (No performance hit)
+    // Auth Sync (Focus-based)
     window.addEventListener('focus', () => {
         try {
             const electron = window.require ? window.require('electron') : require('electron');
