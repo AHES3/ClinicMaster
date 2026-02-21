@@ -199,23 +199,11 @@ function initTopbar() {
     const bar = document.createElement('div');
     bar.id = 'app-bar';
     bar.innerHTML = `
-        <div class="ab-left">
-            <div class="ab-btn" title="Back" onclick="window.history.back()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            </div>
-            <div class="ab-btn" title="Forward" onclick="window.history.forward()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </div>
-        </div>
-        
         <div class="ab-drag">
             <span class="ab-title">ClinicMaster — Intelligence</span>
         </div>
 
         <div class="ab-controls custom-only">
-            <div class="ab-btn win-btn" title="Inspect">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-            </div>
             <div class="ab-btn win-btn" title="Minimize">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             </div>
@@ -231,7 +219,7 @@ function initTopbar() {
     document.body.insertAdjacentElement('afterbegin', bar);
     document.body.classList.add('is-desktop');
 
-    console.log('💎 Premium Native Desktop Active — v24.0 (DevTools IPC Recovery)');
+    console.log('💎 Premium Native Desktop Active — v25.0 (Clean Layout)');
 }
 
 // Aggressive Topbar Init: Run right away
